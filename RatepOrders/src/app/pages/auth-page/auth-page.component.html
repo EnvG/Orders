@@ -1,0 +1,41 @@
+<div class="wrapper">
+  <header>
+    <app-auth-page-menu></app-auth-page-menu>
+  </header>
+
+  <main class="content">
+
+    <section class="auth-card">
+      <h1 class="auth-card__title">Авторизация</h1>
+      <div class="error-list">
+        <p class="login-error error"
+           *ngIf="authForm.get('login')?.invalid && authForm.get('login')?.touched">Логин должен содержать от 5 до 12
+          символов</p>
+        <p class="password-error error"
+           *ngIf="authForm.get('password')?.invalid && authForm.get('password')?.touched">Пароль должен содержать от 8
+          до 16 символов</p>
+      </div>
+      <form class="auth-form"
+            action="submit"
+            [formGroup]="authForm">
+        <div class="input">
+          <label for="login">Логин</label>
+          <input id="login"
+                 type="text"
+                 formControlName="login">
+        </div>
+
+        <div class="input">
+          <label for="password">Пароль</label>
+          <input id="password"
+                 type="password"
+                 formControlName="password">
+        </div>
+        <button class="auth-button"
+        (click)="auth()">Войти</button>
+        <!-- [disabled]="authForm.invalid" -->
+      </form>
+    </section>
+    <section class="slogan">АО РАТЕП — <br>&laquo;Помня историю, создавать будущее...&raquo;</section>
+  </main>
+</div>
