@@ -1,0 +1,54 @@
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.orders {
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - 350px);
+  padding: 10px 20px;
+
+  .result-modificators {
+    min-width: 550px;
+    height: 25%;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+
+    .date-filters {
+      width: 50%;
+      min-width: 550px;
+      display: flex;
+      flex-direction: column;
+      border: 1px dashed var(--main-color);
+      padding: 25px 30px;
+
+      p {
+        font-size: 1.4rem;
+      }
+
+      &-wrapper {
+        display: flex;
+        justify-content: space-between;
+
+        & > .input {
+          width: 200px;
+        }
+      }
+    }
+  }
+}
+
+.contract-link {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.create-order-button {
+  height: 50px;
+}

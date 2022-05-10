@@ -1,0 +1,65 @@
+<div class="wrapper">
+  <app-menu></app-menu>
+  <section class="orders">
+    <!-- Блок модификации вывода (фильтрация, поиск) -->
+    <div class="result-modificators">
+      <!-- Поиск -->
+      <div class="input">
+        <label for="search">Поиск</label>
+        <input id="search"
+               type="text"
+               placeholder="Введите номер заказа, ФИО клиента, наименование или ИНН клиента..."
+               [(ngModel)]="search">
+      </div>
+
+      <!-- Фильтрация -->
+      <div class="filters">
+        <div class="date-filters">
+          <p>Дата заказа</p>
+          <div class="date-filters-wrapper">
+
+            <div class="input">
+              <label for="orderStartDate">От</label>
+              <input type="date"
+                     id="orderStartDate"
+                     [(ngModel)]="orderStartDate"
+                     (focusout)="changeDate()">
+            </div>
+
+            <div class="input">
+              <label for="orderEndDate">От</label>
+              <input type="date"
+                     id="orderEndDate"
+                     [(ngModel)]="orderEndDate"
+                     (focusout)="changeDate()">
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-list">
+      <table>
+        <thead>
+          <th>Номер</th>
+          <th>ИНН клиента</th>
+          <th>Дата заказа</th>
+          <th>Договор</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders">
+            <td>{{order.Number}}</td>
+            <td>{{order.Tin}}</td>
+            <td>{{order.OrderDate | date:'dd.MM.YYYY'}}</td>
+            <td><a class="contract-link"
+                 href="#">Скачать договор</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <button class="create-order-button"
+              (click)="createOrder()">Новый заказ</button>
+    </div>
+  </section>
+</div>

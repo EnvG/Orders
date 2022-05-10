@@ -1,0 +1,44 @@
+<div class="input">
+  <label for="client-tin">ИНН клиента</label>
+  <select id="client-tin"
+          [(ngModel)]="selectedClientId">
+    <option *ngFor="let client of clients"
+            [value]="client.ClientId">{{client.Tin}}</option>
+  </select>
+</div>
+<div class="input">
+  <label for="ready-date">ИНН клиента</label>
+  <input type="date"
+         timezone="[[temizone]]"
+         id="ready-date">
+</div>
+
+<p *ngIf="selectedClientId == undefined"
+   class="info">Для продолжения выберите ИНН клиента</p>
+
+<table *ngIf="selectedClientId != undefined">
+  <col style="width: 50%;">
+  <col style="width: 10%;">
+  <col style="width: 30%;">
+  <col style="width: 10%;">
+  <thead>
+    <th>Изделие</th>
+    <th>Количество</th>
+    <th>Цена</th>
+    <th>Сумма</th>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let product of products"
+        [ngClass]="{selected: product.Amount != 0}">
+      <td>{{product.ProductName}}</td>
+      <input type="number"
+             [(ngModel)]="product.Amount"
+             min="0">
+      <td>{{product.PriceValue}}</td>
+      <td class="price">{{product.PriceValue * (product.Amount || 0) | number: '1.2-2'}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<button (click)="createOrder()">Оформить заказ</button>

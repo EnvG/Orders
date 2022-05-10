@@ -1,0 +1,12 @@
+select,
+input {
+  width: 250px;
+}
+
+.selected {
+  background: var(--selection-color);
+}
+
+.price::after {
+  content: " ₽";
+}

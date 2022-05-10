@@ -16,6 +16,6 @@ export class AuthService {
     );
 
     // Если пользователь существует, то возвращаем true
-    return user != null;
+    return user.length !== 0;
   }
 }
