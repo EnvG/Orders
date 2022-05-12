@@ -6,7 +6,3 @@ input {
 .selected {
   background: var(--selection-color);
 }
-
-.price::after {
-  content: " ₽";
-}

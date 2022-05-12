@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
+import { CookiesService } from './cookies.service';
 import { DatabaseService } from './database.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private database: DatabaseService) {}
+  constructor(
+    private database: DatabaseService,
+    private cookiesService: CookiesService
+  ) {}
 
   // Метод авторизации
   async auth(login: string, password: string) {
@@ -15,7 +19,24 @@ export class AuthService {
       (u?: any) => u?.UserLogin == login && u?.UserPassword == password
     );
 
-    // Если пользователь существует, то возвращаем true
-    return user.length !== 0;
+    // Если пользователь существует,
+    if (user.length !== 0) {
+      // то выставить значения cookies и возвратить true
+      this.cookiesService.setCookie('login', login, 5);
+      return true;
+    } else {
+      // иначе возвратить false
+      return false;
+    }
+  }
+
+  authorizated() {
+    // Значение логина в cookies
+    const login = this.cookiesService.getCookie('login');
+
+    // Если логин есть,
+    // то возвращаем true,
+    // иначе — false
+    return login.trim() !== '';
   }
 }

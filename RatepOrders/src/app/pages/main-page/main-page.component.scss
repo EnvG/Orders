@@ -52,3 +52,20 @@
 .create-order-button {
   height: 50px;
 }
+
+.hidden {
+  display: none;
+}
+
+ng-container {
+  width: 100%;
+  background: #ffffff;
+}
+
+.sum {
+  float: right;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-right: 20px;
+  margin-top: -50px;
+}

@@ -39,6 +39,7 @@
       </div>
     </div>
 
+    <!-- Заказы -->
     <div class="order-list">
       <table>
         <thead>
@@ -48,13 +49,35 @@
           <th>Договор</th>
         </thead>
         <tbody>
-          <tr *ngFor="let order of orders">
-            <td>{{order.Number}}</td>
-            <td>{{order.Tin}}</td>
-            <td>{{order.OrderDate | date:'dd.MM.YYYY'}}</td>
-            <td><a class="contract-link"
-                 href="#">Скачать договор</a></td>
-          </tr>
+          <ng-container *ngFor="let order of orders">
+
+            <tr (mousedown)="orderActiveToggle(order)">
+              <td>{{order.Number}}</td>
+              <td>{{order.Tin}}</td>
+              <td>{{order.OrderDate | date:'dd.MM.yyyy'}}</td>
+              <td><a href="#"
+                   class="contract-link">Скачать договор</a></td>
+            </tr>
+            <tr [ngClass]="{'hidden':!order.UI?.active}">
+              <td colspan="4">
+                <table>
+                  <col style="width: auto;">
+                  <col style="width: 100px;">
+                  <col style="width: auto;">
+                  <tbody>
+
+                    <tr *ngFor="let position of getOrderPositions(order.OrderId)"
+                        style="background: var(--selection-color);">
+                      <td colspan="2">{{position.ProductName}}</td>
+                      <td>{{position.Amount}}</td>
+                      <td class="price">{{position.PriceValue | number: '1.2-2'}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <span class="price sum">Сумма: {{getOrderSum(order.OrderId) | number: '1.2-2'}}</span>
+              </td>
+            </tr>
+          </ng-container>
         </tbody>
       </table>
 

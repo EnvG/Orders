@@ -4,12 +4,23 @@ import { Interface } from 'readline';
 import { DatabaseService } from 'src/app/services/database.service';
 
 interface Order {
-  orderId: number;
+  OrderId: number;
   Number: string;
   Tin: string;
   OrderDate: Date;
   ReadyDate: Date;
   EmployeeId: number;
+  UI?: {
+    active: boolean;
+  };
+}
+
+interface Position {
+  OrderId: number;
+  OrdinalNubmer: number;
+  ProductName: string;
+  Amount: number;
+  PriceValue: number;
 }
 
 @Component({
@@ -19,16 +30,30 @@ interface Order {
 })
 export class MainPageComponent implements OnInit {
   search?: string;
-  orderStartDate?: Date;
-  orderEndDate?: Date;
+  orderStartDate?: string;
+  orderEndDate?: string;
 
   orders: Order[] = [];
+  positions: Position[] = [];
 
   constructor(public database: DatabaseService, private router: Router) {}
 
   ngOnInit(): void {
+    // Получение всех заказов из базы данных
     this.database.getOrders().then((result) => {
+      // Заполнение заказов
       this.orders = result;
+
+      this.orders.forEach((order: Order) => {
+        // Все заказы по умолчанию свёрнуты
+        order.UI = { active: false };
+        // Заполнение позиций заказа
+        this.database.getOrderPositions(order.OrderId).then((positions) => {
+          positions.forEach((p: any) => {
+            this.positions.push(p);
+          });
+        });
+      });
     });
   }
 
@@ -37,9 +62,35 @@ export class MainPageComponent implements OnInit {
   }
 
   changeDate() {
+    // Если начальная дата заказа позже конечной,
     if ((this.orderStartDate || Date.now) > (this.orderEndDate || Date.now)) {
+      // то предупредить об этом пользователя
       alert('Начальная дата не может быть позже конечной');
+      // и установить все даты в начальную
       this.orderEndDate = this.orderStartDate;
     }
+  }
+
+  // Получение позиций заказа по его номеру
+  getOrderPositions(orderId: number) {
+    return this.positions.filter((position) => position.OrderId == orderId);
+  }
+
+  // Получить сумму заказа по его номеру
+  getOrderSum(orderId: number) {
+    let sum = 0;
+
+    const positions = this.getOrderPositions(orderId);
+    positions.forEach((position) => {
+      // Сумма вычисляется как сумма произведений количество на цену каждой позиции
+      sum += position.Amount * position.PriceValue;
+    });
+
+    return sum;
+  }
+
+  // Сменить состояние заказа (свернуть / развернуть)
+  orderActiveToggle(order: Order) {
+    order.UI = { active: !order.UI?.active };
   }
 }

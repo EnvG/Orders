@@ -7,9 +7,9 @@
   </select>
 </div>
 <div class="input">
-  <label for="ready-date">ИНН клиента</label>
+  <label for="ready-date">Дата готовности заказа</label>
   <input type="date"
-         timezone="[[temizone]]"
+         [ngModel]="readyDate"
          id="ready-date">
 </div>
 
@@ -41,4 +41,5 @@
   </tbody>
 </table>
 
-<button (click)="createOrder()">Оформить заказ</button>
+<button (click)="createOrder()"
+        [disabled]="getSelectedPositions().length == 0">Оформить заказ</button>

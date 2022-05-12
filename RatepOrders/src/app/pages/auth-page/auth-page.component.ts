@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { CookiesService } from 'src/app/services/cookies.service';
 import { DatabaseService } from 'src/app/services/database.service';
 
 @Component({
@@ -46,7 +47,17 @@ export class AuthPageComponent implements OnInit {
     this.authForm.get('password')?.setValue('');
   }
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private cookiesService: CookiesService,
+    private router: Router
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Если пользователь уже авторизован,
+    if (this.authService.authorizated()) {
+      // то перенаправить его на главную страницу
+      this.router.navigate(['/main']);
+    }
+  }
 }

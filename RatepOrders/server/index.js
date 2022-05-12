@@ -44,12 +44,6 @@ app.use(function (req, res, next) {
 app.get("/users", (req, res) => {
   connection.query("SELECT * from User", function (err, rows, fields) {
     if (err) return;
-    // res.header("Access-Control-Allow-Origin", "*");
-    // res.header("Access-Control-Allow-Methods", "GET, PUT, POST");
-    // res.header(
-    //   "Access-Control-Allow-Headers",
-    //   "Origin, X-Requested-With, Content-Type, Accept"
-    // );
     res.status(200).json({
       result: rows,
     });
@@ -70,7 +64,7 @@ app.get("/orders", (req, res) => {
 
 app.get("/positions", (req, res) => {
   connection.query(
-    `SELECT OP.OrderId, OP.OrdinalNumber, P.ProductName, OP.Amount FROM OrderPosition OP INNER JOIN Product P ON OP.ProductId = P.ProductId WHERE OrderId = ${req.query["orderId"]}`,
+    `SELECT OP.OrderId, OP.OrdinalNumber, P.ProductName, OP.Amount, Pr.PriceValue FROM OrderPosition OP INNER JOIN Product P ON OP.ProductId = P.ProductId INNER JOIN Price Pr on P.ProductId = Pr.ProductId WHERE OrderId = ${req.query["orderId"]}`,
     function (err, rows, fields) {
       if (err) return;
       res.status(200).json({
@@ -107,22 +101,36 @@ app.get("/clients", (req, res) => {
 
 app.post("/new-order", express.json(), (req, res) => {
   connection.query(
-    `SELECT MAX(OrderId) + 1 as orderId from RatepOrders.Order WHERE ClientId=${req.query["clientId"]}`,
+    `SELECT MAX(OrderId) + 1 as orderId from RatepOrders.Order`,
     function (err, rows, fields) {
       if (err) return;
 
       const orderId = rows[0].orderId || 1;
       const clientId = req.query["clientId"];
+      const employeeId = req.query["employeeId"];
       const number = `RTP-${clientId}-` + `${orderId}`.padStart(3, "0");
-      const positions = req.body;
+      const positions = req.body.positions;
       const date = new Date();
       const orderDate = `${date.getFullYear()}-${
         date.getMonth() + 1
       }-${date.getDate()}`;
+      const readyDate = req.body.readyDate.slice(
+        0,
+        req.body.readyDate.indexOf("T")
+      );
+      connection.query(
+        `INSERT INTO RatepOrders.Order VALUES (${orderId}, "${number}", "${orderDate}", "${readyDate}", ${employeeId}, ${clientId})`
+      );
 
-      console.log(orderDate);
+      var i = 1;
       positions.forEach((position) => {
-        // connection.query(`INSERT INTO RatepOrders.Order VALUES (${orderId}, "${number}", "${orderDate}"`);
+        console.log(
+          `INSERT INTO OrderPosition VALUES (${i}, ${orderId}, ${position.ProductId}, ${position.Amount})`
+        );
+        connection.query(
+          `INSERT INTO OrderPosition VALUES (${i}, ${orderId}, ${position.ProductId}, ${position.Amount})`
+        );
+        i++;
       });
 
       res.status(200).json({
