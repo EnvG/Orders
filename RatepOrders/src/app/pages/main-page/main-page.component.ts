@@ -39,6 +39,8 @@ export class MainPageComponent implements OnInit {
   constructor(public database: DatabaseService, private router: Router) {}
 
   ngOnInit(): void {
+    this.database.post('', null, {clientId: 1, employeeId: 2});
+
     // Получение всех заказов из базы данных
     this.database.getOrders().then((result) => {
       // Заполнение заказов

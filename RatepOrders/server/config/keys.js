@@ -1,7 +1,7 @@
 module.exports = {
   SERVER: {
-    PORT: 5000,
     HOST: "localhost",
+    PORT: 5000,
   },
   DATABASE: {
     MYSQL_URL: "localhost",

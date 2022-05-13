@@ -59,4 +59,16 @@ export class DatabaseService {
       return null;
     }
   }
+
+  post(endpoint: string, body: any, params: any = []) {
+    let param = '';
+
+    Object.keys(params).forEach((key: any) => {
+      param += `${key}=${params[key]}&`;
+    });
+
+    param = param.substring(0, param.length - 1);
+
+    return this.httpClient.post(`${ADDRESS}/${endpoint}?${param}`, body);
+  }
 }

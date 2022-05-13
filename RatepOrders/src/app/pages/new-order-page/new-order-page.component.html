@@ -9,7 +9,7 @@
 <div class="input">
   <label for="ready-date">Дата готовности заказа</label>
   <input type="date"
-         [ngModel]="readyDate"
+         [(ngModel)]="readyDate"
          id="ready-date">
 </div>
 
@@ -34,7 +34,7 @@
       <td>{{product.ProductName}}</td>
       <input type="number"
              [(ngModel)]="product.Amount"
-             min="0">
+             [min]="0">
       <td>{{product.PriceValue}}</td>
       <td class="price">{{product.PriceValue * (product.Amount || 0) | number: '1.2-2'}}</td>
     </tr>

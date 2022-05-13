@@ -64,7 +64,29 @@ app.get("/orders", (req, res) => {
 
 app.get("/positions", (req, res) => {
   connection.query(
-    `SELECT OP.OrderId, OP.OrdinalNumber, P.ProductName, OP.Amount, Pr.PriceValue FROM OrderPosition OP INNER JOIN Product P ON OP.ProductId = P.ProductId INNER JOIN Price Pr on P.ProductId = Pr.ProductId WHERE OrderId = ${req.query["orderId"]}`,
+    `SELECT
+    OP.OrderId,
+    OP.OrdinalNumber,
+    P.ProductName,
+    OP.Amount,
+    Pr.PriceValue
+FROM
+    OrderPosition OP
+        INNER JOIN
+    Product P ON OP.ProductId = P.ProductId
+        INNER JOIN
+    Price Pr ON P.ProductId = Pr.ProductId
+        INNER JOIN
+    RatepOrders.Order O ON OP.OrderId = O.OrderId
+WHERE
+    O.OrderId = ${req.query["orderId"]}
+        AND Pr.ChangeDate = (SELECT
+            MAX(ChangeDate)
+        FROM
+            Price
+        WHERE
+            ProductId = P.ProductId
+                AND ChangeDate <= O.OrderDate)`,
     function (err, rows, fields) {
       if (err) return;
       res.status(200).json({
@@ -114,10 +136,7 @@ app.post("/new-order", express.json(), (req, res) => {
       const orderDate = `${date.getFullYear()}-${
         date.getMonth() + 1
       }-${date.getDate()}`;
-      const readyDate = req.body.readyDate.slice(
-        0,
-        req.body.readyDate.indexOf("T")
-      );
+      const readyDate = req.body.readyDate;
       connection.query(
         `INSERT INTO RatepOrders.Order VALUES (${orderId}, "${number}", "${orderDate}", "${readyDate}", ${employeeId}, ${clientId})`
       );

@@ -39,7 +39,9 @@ export class NewOrderPageComponent implements OnInit {
   ngOnInit(): void {
     const readyDays = 3;
     // Установить дату готовности заказа на [readyDays] дня(ей)(день) вперёд
-    this.readyDate = new Date(Date.now() + readyDays * 24 * 60 * 60 * 1e3).toISOString().split('T')[0];
+    this.readyDate = new Date(Date.now() + readyDays * 24 * 60 * 60 * 1e3)
+      .toISOString()
+      .split('T')[0];
 
     // Получение списка изделий из базы данных
     this.database.getProducts().then((result) => {
@@ -77,18 +79,22 @@ export class NewOrderPageComponent implements OnInit {
   }
 
   createOrder() {
+    // URL-параметры запроса
+    const params = {
+      clientId: this.selectedClientId,
+      employeeId: this.employeeId,
+      readyDate: this.readyDate,
+    };
+    // тело запроса
+    const body = {
+      positions: this.getSelectedPositions(),
+      readyDate: this.readyDate,
+    };
     // Запрос на добавление заказа в базу данных
-    this.httpClient
-      .post(
-        `http://localhost:5000/new-order?clientId=${this.selectedClientId}&employeeId=${this.employeeId}&readyDate=${this.readyDate}`,
-        {
-          positions: this.getSelectedPositions(),
-          readyDate: this.readyDate,
-        }
-      )
-      .subscribe((data: any) => {
-        alert('Заказ оформлен успешно');
-        this.router.navigate(['/main']);
-      });
+    this.database.post('new-order', body, params).subscribe((data: any) => {
+      alert('Заказ оформлен успешно');
+      // Возврат на главную страницу
+      this.router.navigate(['/main']);
+    });
   }
 }

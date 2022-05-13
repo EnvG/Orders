@@ -27,7 +27,7 @@
             </div>
 
             <div class="input">
-              <label for="orderEndDate">От</label>
+              <label for="orderEndDate">До</label>
               <input type="date"
                      id="orderEndDate"
                      [(ngModel)]="orderEndDate"
@@ -65,7 +65,6 @@
                   <col style="width: 100px;">
                   <col style="width: auto;">
                   <tbody>
-
                     <tr *ngFor="let position of getOrderPositions(order.OrderId)"
                         style="background: var(--selection-color);">
                       <td colspan="2">{{position.ProductName}}</td>
