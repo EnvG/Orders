@@ -7,6 +7,15 @@ const mysql = require("mysql");
 const config = require("./config/keys");
 const { ppid } = require("process");
 
+const fs = require("fs");
+const pdf = require("html-pdf");
+const html = fs.readFileSync("./document/template.html", "utf-8");
+
+var options = {
+  width: "210mm",
+  height: "290mm",
+};
+
 const app = express();
 
 const connection = mysql.createConnection({
@@ -52,7 +61,29 @@ app.get("/users", (req, res) => {
 
 app.get("/orders", (req, res) => {
   connection.query(
-    "SELECT O.OrderId, O.Number, O.OrderDate, O.ReadyDate, O.EmployeeId, C.Tin FROM RatepOrders.Order O INNER JOIN RatepOrders.Client C on O.ClientId = C.ClientId",
+    `SELECT
+    O.OrderId,
+    O.Number,
+    O.OrderDate,
+    O.ReadyDate,
+    O.EmployeeId,
+    C.Tin,
+    (SELECT
+            Fullname
+        FROM
+            PhysicalPerson
+        WHERE
+            ClientId = C.ClientId) AS Fullname,
+    (SELECT
+            OrganizationName
+        FROM
+            LegalPerson
+        WHERE
+            ClientId = C.ClientId) AS OrganizationName
+FROM
+    RatepOrders.Order O
+        INNER JOIN
+    RatepOrders.Client C ON O.ClientId = C.ClientId`,
     function (err, rows, fields) {
       if (err) return;
       res.status(200).json({
@@ -109,18 +140,6 @@ app.get("/products", (req, res) => {
   );
 });
 
-app.get("/clients", (req, res) => {
-  connection.query(
-    `SELECT ClientId, Tin FROM Client`,
-    function (err, rows, fields) {
-      if (err) return;
-      res.status(200).json({
-        result: rows,
-      });
-    }
-  );
-});
-
 app.post("/new-order", express.json(), (req, res) => {
   connection.query(
     `SELECT MAX(OrderId) + 1 as orderId from RatepOrders.Order`,
@@ -158,6 +177,60 @@ app.post("/new-order", express.json(), (req, res) => {
     }
   );
 });
+
+app.get("/getClientName", (req, res) => {
+  let clietnId = req.query["clientId"];
+});
+
+app.get("/clients", (req, res) => {
+  connection.query(
+    `SELECT
+    ClientId,
+    Tin as INN,
+    (SELECT
+            Fullname
+        FROM
+            PhysicalPerson
+        WHERE
+            ClientId = C.ClientId) as Fullname,
+    (SELECT
+            OrganizationName
+        FROM
+            LegalPerson
+        WHERE
+            ClientId = C.ClientId) as OrganizationName,
+    (SELECT
+            Trrc
+        FROM
+            LegalPerson
+        WHERE
+            ClientId = C.ClientId) as KPP,
+            (SELECT
+            Psrn
+        FROM
+            LegalPerson
+        WHERE
+            ClientId = C.ClientId) as OGRN
+FROM
+    Client C`,
+    function (err, rows, fields) {
+      if (err) return;
+      res.status(200).json({
+        result: rows,
+      });
+    }
+  );
+});
+
+// app.get("/contract", (req, res) => {
+//   pdf.create(html, options).toBuffer((err, buffer) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       res.send(buffer);
+//     }
+//   });
+// });
 
 app.use(function (req, res, next) {
   next();

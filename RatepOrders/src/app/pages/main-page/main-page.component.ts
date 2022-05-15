@@ -10,6 +10,8 @@ interface Order {
   OrderDate: Date;
   ReadyDate: Date;
   EmployeeId: number;
+  Fullname?: string;
+  OrganizationName?: string;
   UI?: {
     active: boolean;
   };
@@ -39,7 +41,7 @@ export class MainPageComponent implements OnInit {
   constructor(public database: DatabaseService, private router: Router) {}
 
   ngOnInit(): void {
-    this.database.post('', null, {clientId: 1, employeeId: 2});
+    this.database.post('', null, { clientId: 1, employeeId: 2 });
 
     // Получение всех заказов из базы данных
     this.database.getOrders().then((result) => {
@@ -94,5 +96,18 @@ export class MainPageComponent implements OnInit {
   // Сменить состояние заказа (свернуть / развернуть)
   orderActiveToggle(order: Order) {
     order.UI = { active: !order.UI?.active };
+  }
+
+  filteredOrders() {
+    return this.orders.filter(
+      (order) =>
+        (order.OrderDate >= (this.orderStartDate || order.OrderDate) &&
+        order.OrderDate <= (this.orderEndDate || order.OrderDate)) &&
+        (order.Fullname || order.OrganizationName)?.includes(
+          this.search || order.Fullname || order.OrganizationName || ''
+        ) ||
+        order.Number.startsWith(this.search || order.Number) ||
+        order.Tin.startsWith(this.search || order.Tin)
+    );
   }
 }

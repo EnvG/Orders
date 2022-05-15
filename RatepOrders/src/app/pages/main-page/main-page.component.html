@@ -41,25 +41,29 @@
 
     <!-- Заказы -->
     <div class="order-list">
-      <table>
+      <table *ngIf="filteredOrders().length != 0">
         <thead>
           <th>Номер</th>
           <th>ИНН клиента</th>
+          <th>Клиент</th>
           <th>Дата заказа</th>
           <th>Договор</th>
         </thead>
         <tbody>
-          <ng-container *ngFor="let order of orders">
+          <ng-container *ngFor="let order of filteredOrders()">
 
-            <tr (mousedown)="orderActiveToggle(order)">
-              <td>{{order.Number}}</td>
-              <td>{{order.Tin}}</td>
-              <td>{{order.OrderDate | date:'dd.MM.yyyy'}}</td>
-              <td><a href="#"
-                   class="contract-link">Скачать договор</a></td>
+            <tr style="cursor: pointer;">
+              <td (mousedown)="orderActiveToggle(order)">{{order.Number}}</td>
+              <td (mousedown)="orderActiveToggle(order)">{{order.Tin}}</td>
+              <td (mousedown)="orderActiveToggle(order)">{{order.Fullname || order.OrganizationName}}</td>
+              <td (mousedown)="orderActiveToggle(order)">{{order.OrderDate | date:'dd.MM.yyyy'}}</td>
+              <td><a [routerLink]="['/document', order.OrderId.toString()]"
+                   class="contract-link"
+                   target="_blank"
+                   >Печатать договор</a></td>
             </tr>
             <tr [ngClass]="{'hidden':!order.UI?.active}">
-              <td colspan="4">
+              <td colspan="5">
                 <table>
                   <col style="width: auto;">
                   <col style="width: 100px;">
@@ -67,18 +71,19 @@
                   <tbody>
                     <tr *ngFor="let position of getOrderPositions(order.OrderId)"
                         style="background: var(--selection-color);">
-                      <td colspan="2">{{position.ProductName}}</td>
+                      <td colspan="3">{{position.ProductName}}</td>
                       <td>{{position.Amount}}</td>
-                      <td class="price">{{position.PriceValue | number: '1.2-2'}}</td>
+                      <td class="price">{{position.PriceValue | number: '1.2-2' : 'ru'}}</td>
                     </tr>
                   </tbody>
                 </table>
-                <span class="price sum">Сумма: {{getOrderSum(order.OrderId) | number: '1.2-2'}}</span>
+                <span class="price sum">Сумма: {{getOrderSum(order.OrderId) | number: '1.2-2' : 'ru'}}</span>
               </td>
             </tr>
           </ng-container>
         </tbody>
       </table>
+      <h1 *ngIf="filteredOrders().length == 0">Заказы не найдены</h1>
 
       <button class="create-order-button"
               (click)="createOrder()">Новый заказ</button>

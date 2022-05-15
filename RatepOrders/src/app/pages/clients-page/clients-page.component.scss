@@ -1,0 +1,34 @@
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.clients {
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - 350px);
+  padding: 10px 20px;
+
+  .result-modificators {
+    min-width: 550px;
+    height: 25%;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+
+    .filters {
+      width: 100%;
+
+      .client-type-filter {
+        width: 25%;
+        min-width: 400px;
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}

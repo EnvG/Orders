@@ -1,0 +1,115 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  margin: 0 auto;
+  max-width: 140mm;
+
+  font-family: "Times new roman";
+  font-size: 12pt;
+  color: black;
+  line-height: calc(14pt * 1.5);
+  overflow: hidden;
+}
+
+@page {
+  size: auto;
+  margin: 0;
+}
+
+main {
+  text-align: justify;
+}
+
+h1 {
+  font-size: 12pt;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 10mm 0;
+}
+
+h2 {
+  font-size: 12pt;
+  text-align: justify;
+}
+
+section {
+  max-width: 140mm;
+}
+
+p {
+  margin: 2mm 0;
+}
+
+li {
+  margin-left: 12.5mm;
+}
+
+@media print {
+  table {
+    border: 1px solid #000 !important;
+  }
+  th,
+  td {
+    border: 1px solid #000 !important;
+  }
+}
+
+.header {
+  margin-bottom: 10mm;
+}
+
+.page {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.header__title {
+  text-align: center;
+}
+
+.header__date {
+  text-align: right;
+}
+
+.break-before {
+  page-break-before: always;
+}
+
+.sign {
+  width: 45%;
+  height: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &-list {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &-title {
+    opacity: 0.5;
+  }
+
+  p {
+    margin: -0.2rem;
+    padding: 0;
+  }
+}
+
+.attachment {
+  page-break-before: always;
+}
+
+.sum {
+  float: right;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-top: 2rem;
+}

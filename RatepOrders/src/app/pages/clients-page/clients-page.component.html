@@ -1,0 +1,54 @@
+<div class="wrapper">
+  <app-menu></app-menu>
+
+  <section class="clients">
+    <div class="result-modificators">
+      <!-- Поиск -->
+      <div class="input">
+        <label for="search">Поиск</label>
+        <input id="search"
+               type="text"
+               placeholder="Введите ФИО клиента, наименование или ИНН клиента..."
+               [(ngModel)]="search">
+      </div>
+
+      <!-- Фильтры -->
+      <div class="filters">
+        <div class="client-type-filter">
+          <input type="checkbox"
+                 class="custom-checkbox"
+                 id="physical-persons"
+                 [(ngModel)]="viewPhisycalPersons">
+          <label for="physical-persons">Физические лица</label>
+          <input type="checkbox"
+                 class="custom-checkbox"
+                 id="legal-persons"
+                 [(ngModel)]="viewLegalPersons">
+          <label for="legal-persons">Юридические лица</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="clients-list">
+      <table *ngIf="filteredClients().length != 0">
+        <thead>
+          <th>ИНН</th>
+          <th>Клиент</th>
+          <th>КПП</th>
+          <th>ОГРН</th>
+          <th></th>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let client of filteredClients()">
+            <td>{{client.INN}}</td>
+            <td>{{client.Fullname || client.OrganizationName}}</td>
+            <td>{{client.KPP || '–'}}</td>
+            <td>{{client.OGRN || '–'}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <h1 *ngIf="filteredClients().length == 0">Клиенты не найдены</h1>
+    </div>
+  </section>
+</div>

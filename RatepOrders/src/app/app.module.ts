@@ -11,6 +11,8 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MenuComponent } from './pages/menu/menu.component';
 import { MenuItemComponent } from './pages/menu/menu-item/menu-item.component';
 import { NewOrderPageComponent } from './pages/new-order-page/new-order-page.component';
+import { DocumentComponent } from './pages/document/document.component';
+import { ClientsPageComponent } from './pages/clients-page/clients-page.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +23,8 @@ import { NewOrderPageComponent } from './pages/new-order-page/new-order-page.com
     MenuComponent,
     MenuItemComponent,
     NewOrderPageComponent,
+    DocumentComponent,
+    ClientsPageComponent,
   ],
   imports: [
     BrowserModule,
