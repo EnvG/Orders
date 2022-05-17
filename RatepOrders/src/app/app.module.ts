@@ -13,6 +13,8 @@ import { MenuItemComponent } from './pages/menu/menu-item/menu-item.component';
 import { NewOrderPageComponent } from './pages/new-order-page/new-order-page.component';
 import { DocumentComponent } from './pages/document/document.component';
 import { ClientsPageComponent } from './pages/clients-page/clients-page.component';
+import { NewClientPageComponent } from './pages/new-client-page/new-client-page.component';
+import { TextMaskModule } from 'angular2-text-mask';
 
 @NgModule({
   declarations: [
@@ -25,6 +27,7 @@ import { ClientsPageComponent } from './pages/clients-page/clients-page.componen
     NewOrderPageComponent,
     DocumentComponent,
     ClientsPageComponent,
+    NewClientPageComponent,
   ],
   imports: [
     BrowserModule,
@@ -32,6 +35,7 @@ import { ClientsPageComponent } from './pages/clients-page/clients-page.componen
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    TextMaskModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

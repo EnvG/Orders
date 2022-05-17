@@ -6,6 +6,7 @@ import { AuthPageComponent } from './pages/auth-page/auth-page.component';
 import { ClientsPageComponent } from './pages/clients-page/clients-page.component';
 import { DocumentComponent } from './pages/document/document.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
+import { NewClientPageComponent } from './pages/new-client-page/new-client-page.component';
 import { NewOrderPageComponent } from './pages/new-order-page/new-order-page.component';
 
 const routes: Routes = [
@@ -24,6 +25,11 @@ const routes: Routes = [
   {
     path: 'clients',
     component: ClientsPageComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'new-client',
+    component: NewClientPageComponent,
     canActivate: [AuthGuard],
   },
 ];

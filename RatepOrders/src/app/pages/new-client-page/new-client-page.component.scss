@@ -1,0 +1,18 @@
+.wrapper {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.common-fields {
+  margin-bottom: 4rem;
+}
+
+.passport-data {
+  margin-bottom: 5rem;
+}
+
+.add-client-button {
+  padding: 0.5rem;
+  width: 50%;
+}

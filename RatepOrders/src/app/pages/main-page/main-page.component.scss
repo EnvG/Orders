@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   width: calc(100vw - 350px);
+  min-height: 120p;
   padding: 10px 20px;
 
   .result-modificators {
@@ -44,13 +45,19 @@
   }
 }
 
+.order-list {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
 .contract-link {
   font-weight: bold;
   text-decoration: underline;
 }
 
 .create-order-button {
-  height: 50px;
+  // height: 50px;
 }
 
 .hidden {

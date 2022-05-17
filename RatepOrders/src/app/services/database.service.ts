@@ -60,15 +60,22 @@ export class DatabaseService {
     }
   }
 
+  addPhysicalPersonClient(body: any) {
+    return this.post('new-physical-person-client', body);
+  }
+
   post(endpoint: string, body: any, params: any = []) {
     let param = '';
 
-    Object.keys(params).forEach((key: any) => {
-      param += `${key}=${params[key]}&`;
-    });
+    if (params != []) {
+      param += '?';
+      Object.keys(params).forEach((key: any) => {
+        param += `${key}=${params[key]}&`;
+      });
+    }
 
     param = param.substring(0, param.length - 1);
 
-    return this.httpClient.post(`${ADDRESS}/${endpoint}?${param}`, body);
+    return this.httpClient.post(`${ADDRESS}/${endpoint}${param}`, body);
   }
 }

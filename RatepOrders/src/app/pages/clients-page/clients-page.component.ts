@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { DatabaseService } from 'src/app/services/database.service';
 
 interface Client {
@@ -22,7 +23,7 @@ export class ClientsPageComponent implements OnInit {
   viewPhisycalPersons: boolean = true;
   viewLegalPersons: boolean = true;
 
-  constructor(private database: DatabaseService) {}
+  constructor(private database: DatabaseService, private router: Router) {}
 
   ngOnInit(): void {
     this.database.getClients().then((result: Client[]) => {
@@ -39,5 +40,9 @@ export class ClientsPageComponent implements OnInit {
           client.KPP &&
           client.OGRN)
     );
+  }
+
+  newClient() {
+    this.router.navigate(['new-client']);
   }
 }

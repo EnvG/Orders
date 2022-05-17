@@ -222,15 +222,39 @@ FROM
   );
 });
 
-// app.get("/contract", (req, res) => {
-//   pdf.create(html, options).toBuffer((err, buffer) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       res.send(buffer);
-//     }
-//   });
-// });
+app.post("/new-physical-person-client", express.json(), (req, res) => {
+
+  connection.query(
+    `SELECT MAX(ClientId) + 1 as ClientId FROM Client`,
+    function (err, rows, fields) {
+      if (err) return;
+
+      let clientId = rows[0].ClientId;
+      let body = req.body;
+      let tin = body.INN;
+      let fullname = body.fullname;
+      let phone = body.phone;
+      let address = body.address;
+
+      let seria = body.passport.seria;
+      let number = body.passport.number;
+      let issueDate = body.passport.issueDate;
+      let issuedBy = body.passport.issuedBy;
+
+      console.log(clientId, tin, fullname, phone, address);
+      console.log(seria, number, issueDate, issuedBy);
+
+      connection.query(`INSERT INTO Client VALUES (${clientId}, "${tin}")`);
+      connection.query(`INSERT INTO PhysicalPerson VALUES (${clientId}, "${fullname}", "${phone}", "${address}")`);
+      connection.query(`INSERT INTO Passport VALUES (${clientId}, "${seria}", "${number}", "${issueDate}", "${issuedBy}")`);
+
+
+      res.status(200).json({
+        result: rows[0].ClientId,
+      });
+    }
+  );
+});
 
 app.use(function (req, res, next) {
   next();
