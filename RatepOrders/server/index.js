@@ -59,6 +59,20 @@ app.get("/users", (req, res) => {
   });
 });
 
+app.get("/get-post-id", (req, res) => {
+  let login = req.query["login"];
+
+  connection.query(
+    `SELECT E.PostId FROM RatepOrders.User U INNER JOIN Employee E ON U.UserId = E.UserId WHERE UserLogin = "${login}"`,
+    function (err, rows, fields) {
+      if (err) return;
+      res.status(200).json({
+        result: rows[0].PostId,
+      });
+    }
+  );
+});
+
 app.get("/orders", (req, res) => {
   connection.query(
     `SELECT
@@ -117,9 +131,19 @@ WHERE
             Price
         WHERE
             ProductId = P.ProductId
+                AND ChangeDate <= O.OrderDate)
+        AND Pr.OrdinalNubmer = (SELECT
+            MAX(OrdinalNubmer)
+        FROM
+            Price
+        WHERE
+            ProductId = P.ProductId
                 AND ChangeDate <= O.OrderDate)`,
     function (err, rows, fields) {
-      if (err) return;
+      if (err) {
+        console.log(err);
+        return;
+      }
       res.status(200).json({
         result: rows,
       });
@@ -129,8 +153,27 @@ WHERE
 
 app.get("/products", (req, res) => {
   connection.query(
-    `SELECT P.ProductId, P.ProductName, Pr.PriceValue FROM Product P INNER JOIN Price Pr on P.ProductId = Pr.ProductId
-    WHERE Pr.ChangeDate = (SELECT max(ChangeDate) from Price WHERE ProductId = P.ProductId)`,
+    `SELECT
+    P.ProductId, P.ProductName, Pr.PriceValue, Pr.ChangeDate
+FROM
+    Product P
+        INNER JOIN
+    Price Pr ON P.ProductId = Pr.ProductId
+WHERE
+    Pr.ChangeDate = (SELECT
+            MAX(ChangeDate)
+        FROM
+            Price
+        WHERE
+            ProductId = P.ProductId
+                AND ChangeDate <= SYSDATE())
+        AND Pr.OrdinalNubmer = (SELECT
+            MAX(OrdinalNubmer)
+        FROM
+            Price
+        WHERE
+            ProductId = P.ProductId
+                AND ChangeDate <= SYSDATE())`,
     function (err, rows, fields) {
       if (err) return;
       res.status(200).json({
@@ -186,7 +229,7 @@ app.get("/clients", (req, res) => {
   connection.query(
     `SELECT
     ClientId,
-    Tin as INN,
+    Tin as Tin,
     (SELECT
             Fullname
         FROM
@@ -223,13 +266,12 @@ FROM
 });
 
 app.post("/new-physical-person-client", express.json(), (req, res) => {
-
   connection.query(
     `SELECT MAX(ClientId) + 1 as ClientId FROM Client`,
     function (err, rows, fields) {
       if (err) return;
 
-      let clientId = rows[0].ClientId;
+      let clientId = rows[0].ClientId || 1;
       let body = req.body;
       let tin = body.INN;
       let fullname = body.fullname;
@@ -245,13 +287,152 @@ app.post("/new-physical-person-client", express.json(), (req, res) => {
       console.log(seria, number, issueDate, issuedBy);
 
       connection.query(`INSERT INTO Client VALUES (${clientId}, "${tin}")`);
-      connection.query(`INSERT INTO PhysicalPerson VALUES (${clientId}, "${fullname}", "${phone}", "${address}")`);
-      connection.query(`INSERT INTO Passport VALUES (${clientId}, "${seria}", "${number}", "${issueDate}", "${issuedBy}")`);
-
+      connection.query(
+        `INSERT INTO PhysicalPerson VALUES (${clientId}, "${fullname}", "${phone}", "${address}")`
+      );
+      connection.query(
+        `INSERT INTO Passport VALUES (${clientId}, "${seria}", "${number}", "${issueDate}", "${issuedBy}")`
+      );
 
       res.status(200).json({
         result: rows[0].ClientId,
       });
+    }
+  );
+});
+
+app.post("/new-legal-person-client", express.json(), (req, res) => {
+  connection.query(
+    `SELECT MAX(ClientId) + 1 as ClientId FROM Client`,
+    function (err, rows, fields) {
+      if (err) return;
+
+      let clientId = rows[0].ClientId || 1;
+      let body = req.body;
+      let tin = body.INN;
+      let address = body.address;
+      let trrc = body.KPP;
+      let psrn = body.OGRN;
+      let organizationName = body.organizationName;
+
+      let seria = body.passport.seria;
+      let number = body.passport.number;
+      let issueDate = body.passport.issueDate;
+      let issuedBy = body.passport.issuedBy;
+
+      console.log(clientId, tin, organizationName, address, trrc, psrn);
+      console.log(seria, number, issueDate, issuedBy);
+
+      connection.query(`INSERT INTO Client VALUES (${clientId}, "${tin}")`);
+      connection.query(
+        `INSERT INTO LegalPerson VALUES (${clientId}, "${organizationName}", "${trrc}", "${psrn}", "${address}")`
+      );
+      connection.query(
+        `INSERT INTO Passport VALUES (${clientId}, "${seria}", "${number}", "${issueDate}", "${issuedBy}")`
+      );
+
+      res.status(200).json({
+        result: rows[0].ClientId,
+      });
+    }
+  );
+});
+
+app.post("/update-product", express.json(), (req, res) => {
+  let body = req.query;
+  let productId = body.productId;
+  let productName = body.productName;
+  let priceValue = body.priceValue;
+  let changeDate = body.changeDate;
+
+  connection.query(
+    `UPDATE Product SET ProductName = "${productName}" WHERE ProductId = ${productId}`,
+    function (err, rows, fields) {
+      if (err) {
+        console.log(err);
+        res.status(400);
+        return;
+      }
+    }
+  );
+
+  connection.query(
+    `SELECT MAX(OrdinalNubmer) + 1 as ordinalNumber FROM Price WHERE ProductId = ${productId}`,
+    function (err, rows, fields) {
+      if (err) {
+        console.log(err);
+        res.status(400);
+        return;
+      }
+
+      let ordinalNumber = rows[0].ordinalNumber;
+
+      connection.query(
+        `INSERT INTO Price VALUES (${ordinalNumber}, ${productId}, ${priceValue}, "${changeDate}")`,
+        function (err, rows, fields) {
+          if (err) {
+            console.log(err);
+            res.status(400);
+            return;
+          }
+        }
+      );
+    }
+  );
+});
+
+app.post("/new-product", express.json(), (req, res) => {
+  connection.query(
+    `SELECT MAX(ProductId) + 1 as productId FROM Product`,
+    function (err, rows, fields) {
+      if (err) {
+        console.log(err);
+        res.status(400);
+        return;
+      }
+
+      console.log(req.body);
+
+      let productId = rows[0].productId;
+      let productName = req.body.productName;
+      let priceValue = req.body.priceValue;
+      let changeDate = req.body.changeDate;
+      console.log(productId, productName, priceValue, changeDate);
+
+      connection.query(
+        `INSERT INTO Product VALUES (${productId}, "${productName}")`,
+        function (err, rows, fields) {
+          if (err) {
+            console.log(err);
+            res.status(400);
+            return;
+          }
+        }
+      );
+
+      connection.query(
+        `SELECT MAX(OrdinalNubmer) + 1 as ordinalNumber FROM Price WHERE ProductId = ${productId}`,
+        function (err, rows, fields) {
+          if (err) {
+            console.log(err);
+            res.status(400);
+            return;
+          }
+
+          let ordinalNumber = rows[0].ordinalNumber || 1;
+
+          connection.query(
+            `INSERT INTO Price VALUES (${ordinalNumber}, ${productId}, ${priceValue}, "${changeDate}")`,
+            function (err, rows, fields) {
+              if (err) {
+                console.log(err);
+                res.status(400);
+                return;
+              }
+            }
+          );
+        }
+      );
     }
   );
 });

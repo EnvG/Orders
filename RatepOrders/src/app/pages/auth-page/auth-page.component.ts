@@ -56,8 +56,15 @@ export class AuthPageComponent implements OnInit {
   ngOnInit(): void {
     // Если пользователь уже авторизован,
     if (this.authService.authorizated()) {
-      // то перенаправить его на главную страницу
-      this.router.navigate(['/main']);
+      // то перенаправить:
+      // Менеджера на страницу заказов
+      if (this.authService.isManager()) {
+        this.router.navigate(['/main']);
+      }
+      // Директора на страницу изделий
+      if (this.authService.isDirector()) {
+        this.router.navigate(['/products']);
+      }
     }
   }
 }

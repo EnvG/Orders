@@ -12,4 +12,7 @@ export class MenuComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  logout() {
+    alert('Cliked');
+  }
 }

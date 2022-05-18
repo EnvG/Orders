@@ -23,6 +23,9 @@ export class AuthService {
     if (user.length !== 0) {
       // то выставить значения cookies и возвратить true
       this.cookiesService.setCookie('login', login, 5);
+      this.database.getPostId(login).then((postId: number) => {
+        this.cookiesService.setCookie('role', postId.toString(), 5);
+      });
       return true;
     } else {
       // иначе возвратить false
@@ -33,10 +36,23 @@ export class AuthService {
   authorizated() {
     // Значение логина в cookies
     const login = this.cookiesService.getCookie('login');
+    const role = this.cookiesService.getCookie('role');
 
-    // Если логин есть,
+    // Если логин и роль есть,
     // то возвращаем true,
     // иначе — false
-    return login.trim() !== '';
+    return login.trim() !== '' && role.trim() !== '';
+  }
+
+  isManager() {
+    let login = this.cookiesService.getCookie('login');
+    let role = this.cookiesService.getCookie('role');
+    return this.authorizated() && role == '2';
+  }
+
+  isDirector() {
+    let login = this.cookiesService.getCookie('login');
+    let role = this.cookiesService.getCookie('role');
+    return this.authorizated() && role == '3';
   }
 }

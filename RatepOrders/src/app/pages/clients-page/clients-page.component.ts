@@ -4,7 +4,7 @@ import { DatabaseService } from 'src/app/services/database.service';
 
 interface Client {
   ClientId: number;
-  INN: string;
+  Tin: string;
   Fullname?: string;
   OrganizationName?: string;
   KPP?: string;

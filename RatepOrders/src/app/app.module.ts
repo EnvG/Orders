@@ -15,6 +15,7 @@ import { DocumentComponent } from './pages/document/document.component';
 import { ClientsPageComponent } from './pages/clients-page/clients-page.component';
 import { NewClientPageComponent } from './pages/new-client-page/new-client-page.component';
 import { TextMaskModule } from 'angular2-text-mask';
+import { ProductsPageComponent } from './pages/products-page/products-page.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { TextMaskModule } from 'angular2-text-mask';
     DocumentComponent,
     ClientsPageComponent,
     NewClientPageComponent,
+    ProductsPageComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TextMaskModule } from 'angular2-text-mask';
 import { DatabaseService } from 'src/app/services/database.service';
 import { setInterval } from 'timers';
@@ -90,7 +91,7 @@ export class NewClientPageComponent implements OnInit {
   // Маска для номера паспорта
   public numberMask = Array(6).fill(/\d/, 0);
 
-  constructor(private database: DatabaseService) {}
+  constructor(private database: DatabaseService, private router: Router) {}
 
   ngOnInit(): void {}
 
@@ -137,17 +138,55 @@ export class NewClientPageComponent implements OnInit {
       };
 
       let body = {
-        INN:INN,
+        INN: INN,
         fullname: fullname,
         phone: phone,
         address: address,
         passport: passport,
       };
 
-      this.database.post('new-physical-person-client', body).subscribe((result) => {
-        console.log(result);
+      this.database.addPhysicalPersonClient(body).subscribe(
+        (result) => {
+          alert('Клиент успешно добавлен');
+          this.router.navigate(['/main']);
+        },
+        (error) => {
+          alert('Ошибка добавления клиента');
+        }
+      );
+    }
+    else if (this.isLegalPerson()) {
+      let INN = this.form.get('tin')?.value;
+      let KPP = this.legalPersonForm.get('trrc')?.value;
+      let OGRN = this.legalPersonForm.get('psrn')?.value;
+      let name: string = this.legalPersonForm.get('name')?.value;
 
-      });
+      let address = this.form.get('address')?.value;
+      let passport = {
+        seria: this.form.get('seria')?.value,
+        number: this.form.get('number')?.value,
+        issueDate: this.form.get('issueDate')?.value,
+        issuedBy: this.form.get('issuedBy')?.value,
+      };
+
+      let body = {
+        INN: INN,
+        KPP: KPP,
+        OGRN: OGRN,
+        address: address,
+        organizationName: name.replace(/"/g, "'"),
+        passport: passport,
+      };
+
+      this.database.addLegalPersonClient(body).subscribe(
+        (result) => {
+          alert('Клиент успешно добавлен');
+          this.router.navigate(['/main']);
+        },
+        (error) => {
+          alert('Ошибка добавления клиента');
+        }
+      );
     }
   }
 }

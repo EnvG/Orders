@@ -7,12 +7,11 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { CookiesService } from '../services/cookies.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate {
+export class DirectorAuthGuard implements CanActivate {
   constructor(private authService: AuthService) {}
 
   canActivate(
@@ -23,6 +22,6 @@ export class AuthGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    return this.authService.authorizated() && this.authService.isManager();
+    return this.authService.authorizated() && this.authService.isDirector();
   }
 }

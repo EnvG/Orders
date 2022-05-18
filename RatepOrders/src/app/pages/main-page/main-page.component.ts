@@ -59,6 +59,8 @@ export class MainPageComponent implements OnInit {
         });
       });
     });
+
+    this.database.getPostId('qwerty').then((postId: number) => console.log(postId));
   }
 
   createOrder() {

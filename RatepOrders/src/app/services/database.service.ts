@@ -43,6 +43,32 @@ export class DatabaseService {
     return await this.get('clients');
   }
 
+  updateProduct(
+    productId: number,
+    productName: string,
+    priceValue: number,
+    changeDate: string
+  ) {
+    return this.httpClient.post(
+      `${ADDRESS}/update-product?productId=${productId}&productName=${productName}&priceValue=${priceValue}&changeDate=${changeDate}`,
+      null
+    );
+  }
+
+  addProduct(productName: string, priceValue: number, changeDate: Date) {
+    let body = {
+      productName: productName,
+      priceValue: priceValue,
+      changeDate: changeDate.toISOString().split('T')[0],
+    };
+
+    return this.post('new-product', body);
+  }
+
+  async getPostId(login: string) {
+    return await this.get(`get-post-id?login=${login}`);
+  }
+
   // Метод get-запроса к серверу
   async get(endpoint: string) {
     let response = await fetch(`${ADDRESS}/${endpoint}`);
@@ -62,6 +88,10 @@ export class DatabaseService {
 
   addPhysicalPersonClient(body: any) {
     return this.post('new-physical-person-client', body);
+  }
+
+  addLegalPersonClient(body: any) {
+    return this.post('new-legal-person-client', body);
   }
 
   post(endpoint: string, body: any, params: any = []) {

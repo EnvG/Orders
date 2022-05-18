@@ -1,0 +1,30 @@
+<table>
+  <col style="width: 50%;">
+  <col style="width: 35%;">
+  <col style="width: 15%;">
+  <thead>
+    <th>Изделие</th>
+    <th>Цена</th>
+    <th>Сохранение изменений</th>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let product of products">
+      <td>
+        <input type="text"
+               [(ngModel)]="product.ProductName">
+      </td>
+      <td>
+        <input type="number"
+        min="0"
+               [(ngModel)]="product.PriceValue">
+      </td>
+      <td>
+        <button class="save-button"
+                [disabled]="!product.PriceValue || product.ProductName == product.InitProductName && (product.PriceValue || product.initPriceValue) == product.initPriceValue"
+                (click)="save(product)">Сохранить</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<button (click)="new()">Новое изделие</button>
