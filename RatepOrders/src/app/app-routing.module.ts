@@ -14,32 +14,27 @@ import { ProductsPageComponent } from './pages/products-page/products-page.compo
 const routes: Routes = [
   { path: '', component: AuthPageComponent },
   // Страницы Менеджера
-  { path: 'main', component: MainPageComponent, canActivate: [AuthGuard] },
+  { path: 'main', component: MainPageComponent },
   {
     path: 'new-order',
     component: NewOrderPageComponent,
-    canActivate: [AuthGuard],
   },
   {
     path: 'document/:id',
     component: DocumentComponent,
-    canActivate: [AuthGuard],
   },
   {
     path: 'clients',
     component: ClientsPageComponent,
-    canActivate: [AuthGuard],
   },
   {
     path: 'new-client',
     component: NewClientPageComponent,
-    canActivate: [AuthGuard],
   },
   //  Страницы Директора
   {
     path: 'products',
     component: ProductsPageComponent,
-    canActivate: [DirectorAuthGuard],
   },
 ];
 

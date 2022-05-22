@@ -1,5 +1,11 @@
+import { LowerCasePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { CookiesService } from 'src/app/services/cookies.service';
@@ -29,42 +35,69 @@ export class AuthPageComponent implements OnInit {
     ]),
   });
 
-  async auth() {
-    // Введённый логин
-    const { login } = this.authForm.value;
-    // Введённый пароль
-    const { password } = this.authForm.value;
+  public get login(): AbstractControl | null {
+    return this.authForm.get('login');
+  }
 
-    // Авториазация пользователя
-    if (await this.authService.auth(login, password)) {
-      // Переход на главную страницу
-      this.router.navigate(['main']);
-    } else {
-      alert('Неверный логин или пароль');
-    }
+  public get password(): AbstractControl | null {
+    return this.authForm.get('password');
+  }
+
+  async auth() {
+
+    // Введённый логин
+    const login = this.login?.value;
+    // Введённый пароль
+    const password = this.password?.value;
+
+    this.database.auth(login, password).subscribe(
+      (result: any) => {
+        let { token } = result;
+        let { key } = result;
+
+        // Установка cookies
+        this.cookiesService.setCookie('token', token, 30);
+        this.cookiesService.setCookie('key', key, 30);
+        this.cookiesService.setCookie('login', login, 30);
+
+        // Переход на следующую страницу
+        this.nextPage();
+      },
+      (err) => {
+        alert('Неверный логин или пароль');
+      }
+    );
 
     // Сброс введённого пароля
-    this.authForm.get('password')?.setValue('');
+    this.password?.setValue('');
   }
 
   constructor(
     private authService: AuthService,
     private cookiesService: CookiesService,
+    private database: DatabaseService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Если пользователь уже авторизован,
-    if (this.authService.authorizated()) {
-      // то перенаправить:
-      // Менеджера на страницу заказов
-      if (this.authService.isManager()) {
-        this.router.navigate(['/main']);
+    this.authService.checkToken().subscribe(({ access }: any) => {
+      if (Boolean(access)) {
+        this.nextPage();
       }
-      // Директора на страницу изделий
-      if (this.authService.isDirector()) {
-        this.router.navigate(['/products']);
+    });
+  }
+
+  nextPage() {
+    // Перенаправление
+    this.database.getPostId().subscribe(({ postId }: any) => {
+      switch(postId.toString()) {
+        case '2':
+          this.router.navigate(['/main']);
+          break;
+        case '3':
+          this.router.navigate(['/products']);
+          break;
       }
-    }
+    });
   }
 }

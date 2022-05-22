@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { CookiesService } from './cookies.service';
 const config = require('../../../server/config/keys');
 const URL = config.SERVER.HOST;
 const PORT = config.SERVER.PORT;
@@ -9,16 +10,38 @@ const ADDRESS = `http://${URL}:${PORT}`;
   providedIn: 'root',
 })
 export class DatabaseService {
-  constructor(private httpClient: HttpClient) {}
+  constructor(
+    private httpClient: HttpClient,
+    private cookies: CookiesService
+  ) {}
+
+  // Авторизация
+  auth(login: string, password: string) {
+    return this.httpClient.get(`${ADDRESS}/auth/${login}/${password}`);
+  }
+
+  getOrders(clientId: number, contractId: number) {
+    return this.httpClient.get(`${ADDRESS}/orders/${clientId}/${contractId}`);
+  }
+
+  getOrderComposition(clientId: number, contractId: number, orderId: number) {
+    return this.httpClient.get(
+      `${ADDRESS}/order-composition/${clientId}/${contractId}/${orderId}`
+    );
+  }
+
+  checkToken() {
+    let token = this.cookies.getCookie('token');
+    let login = this.cookies.getCookie('login');
+    let key = this.cookies.getCookie('key');
+    return this.httpClient.get(
+      `${ADDRESS}/check-token/${token}/${login}/${key}`
+    );
+  }
 
   // Получение всех пользователей из базы данных
   async getUsers() {
     return await this.get('users');
-  }
-
-  // Получение всех заказов из базы данных
-  async getOrders() {
-    return await this.get('orders');
   }
 
   // Получение позиций заказа по его номеру
@@ -65,8 +88,19 @@ export class DatabaseService {
     return this.post('new-product', body);
   }
 
-  async getPostId(login: string) {
-    return await this.get(`get-post-id?login=${login}`);
+  getPostId() {
+    let login = this.cookies.getCookie('login');
+    return this.httpClient.get(`${ADDRESS}/post-id/${login}`);
+  }
+
+  getContracts() {
+    return this.httpClient.get(`${ADDRESS}/contracts`);
+  }
+
+  getSpecification(clientId: number, contractId: number) {
+    return this.httpClient.get(
+      `${ADDRESS}/specification/${clientId}/${contractId}`
+    );
   }
 
   // Метод get-запроса к серверу

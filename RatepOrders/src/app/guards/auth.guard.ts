@@ -23,6 +23,6 @@ export class AuthGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    return this.authService.authorizated() && this.authService.isManager();
+    return this.authService.authorizated();
   }
 }

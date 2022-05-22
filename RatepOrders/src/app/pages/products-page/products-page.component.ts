@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { min } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
 import { DatabaseService } from 'src/app/services/database.service';
 
 interface Product {
@@ -20,7 +21,7 @@ export class ProductsPageComponent implements OnInit {
   products: Product[] = [];
   minDay: Date = new Date();
 
-  constructor(private database: DatabaseService) {}
+  constructor(private database: DatabaseService, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.database.getProducts().then((result: any[]) => {
@@ -74,5 +75,11 @@ export class ProductsPageComponent implements OnInit {
       PriceValue: 0,
       ChangeDate: new Date(),
     });
+  }
+
+  logout() {
+    if (confirm('Вы действительно хотите выйти?')) {
+      this.authService.logout();
+    }
   }
 }

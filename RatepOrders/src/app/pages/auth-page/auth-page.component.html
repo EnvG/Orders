@@ -9,10 +9,10 @@
       <h1 class="auth-card__title">Авторизация</h1>
       <div class="error-list">
         <p class="login-error error"
-           *ngIf="authForm.get('login')?.invalid && authForm.get('login')?.touched">Логин должен содержать от 5 до 12
+           *ngIf="login?.invalid && login?.touched">Логин должен содержать от 5 до 12
           символов</p>
         <p class="password-error error"
-           *ngIf="authForm.get('password')?.invalid && authForm.get('password')?.touched">Пароль должен содержать от 5
+           *ngIf="password?.invalid && password?.touched">Пароль должен содержать от 5
           до 16 символов</p>
       </div>
       <form class="auth-form"

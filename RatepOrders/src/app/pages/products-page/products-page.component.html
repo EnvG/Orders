@@ -16,7 +16,7 @@
       </td>
       <td>
         <input type="number"
-        min="0"
+               min="0"
                [(ngModel)]="product.PriceValue">
       </td>
       <td>
@@ -27,4 +27,7 @@
     </tr>
   </tbody>
 </table>
-<button (click)="new()">Новое изделие</button>
+<div class="button-list">
+  <button (click)="new()">Новое изделие</button>
+  <button (click)="logout()">Выход</button>
+</div>

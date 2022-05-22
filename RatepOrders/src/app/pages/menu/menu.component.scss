@@ -14,3 +14,16 @@
   border-radius: 0 20px 0 0;
   padding: 21px 0;
 }
+
+.menu-list {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.logout-button {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}

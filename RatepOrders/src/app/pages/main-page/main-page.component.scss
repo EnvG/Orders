@@ -74,5 +74,57 @@ ng-container {
   font-weight: bold;
   text-decoration: underline;
   margin-right: 20px;
-  margin-top: -50px;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.order {
+  border: none;
+  margin-bottom: 0;
+
+  th {
+    border: none;
+    border-bottom: 2px dashed var(--main-color);
+    border-left: 1px dashed var(--main-color);
+    font-size: 1rem;
+  }
+
+  tr:nth-child(2n) {
+    background-color: var(--selection-color);
+  }
+
+  td {
+    border: none;
+    border-bottom: 3px dashed var(--main-color);
+    border-left: 1px dashed var(--main-color);
+    font-size: 1rem;
+  }
+}
+
+.order-composition {
+  float: right;
+  width: 95%;
+  border: 1px solid var(--main-color);
+  border-top: none;
+  margin-top: -0.5rem;
+
+  th {
+    border: none;
+    border-bottom: 2px solid var(--main-color);
+    border-left: 1px solid var(--main-color);
+    font-size: 1rem;
+  }
+
+  tr:nth-child(2n) {
+    background-color: var(--selection-color);
+  }
+
+  td {
+    border: none;
+    border-bottom: 1px solid var(--main-color);
+    border-left: 1px solid var(--main-color);
+    font-size: 1rem;
+  }
 }

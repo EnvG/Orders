@@ -40,27 +40,27 @@ export class DocumentComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.database.getOrders().then(async (orders: Order[]) => {
-      let orderId = this.activatedRoute.snapshot.params['id'];
+    // this.database.getOrders().then(async (orders: Order[]) => {
+    //   let orderId = this.activatedRoute.snapshot.params['id'];
 
-      this.order = orders.filter((o: Order) => o.OrderId == orderId)[0];
-      new Promise((resolve, reject) => {
-        this.database
-          .getOrderPositions(this.order?.OrderId || 0)
-          .then((result) => {
-            this.positions = result;
-            setTimeout(() => resolve(result), 1);
-          });
-      }).then((result) => {
-        if (!this.order) {
-          alert('Договор не найден');
-          document.body.innerHTML = '';
-        } else {
-          window.print();
-          window.close();
-        }
-      });
-    });
+    //   this.order = orders.filter((o: Order) => o.OrderId == orderId)[0];
+    //   new Promise((resolve, reject) => {
+    //     this.database
+    //       .getOrderPositions(this.order?.OrderId || 0)
+    //       .then((result) => {
+    //         this.positions = result;
+    //         setTimeout(() => resolve(result), 1);
+    //       });
+    //   }).then((result) => {
+    //     if (!this.order) {
+    //       alert('Договор не найден');
+    //       document.body.innerHTML = '';
+    //     } else {
+    //       window.print();
+    //       window.close();
+    //     }
+    //   });
+    // });
   }
 
   getInitials(string: string) {
