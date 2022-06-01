@@ -1,110 +1,44 @@
-<form [formGroup]="form">
+<div class="container">
+  <app-menu></app-menu>
 
-  <div class="wrapper">
+
+  <div class="card">
     <div class="error-list">
-      <p class="error tin-error"
-         *ngIf="form.get('tin')?.invalid || form.get('tin')?.value?.toString().length == 11">ИНН должен иметь длину 10
-        или 12 цифр</p>
+      <p class="INN-error error"
+         *ngIf="!INNValidate()">ИНН должен иметь длину 10 или 12 цифр</p>
     </div>
-    <!-- Общие для Юридического и Физического лица поля -->
-    <section class="common-fields">
-      <!-- Поле ИНН -->
-      <div class="input">
-        <label for="tin">ИНН</label>
-        <input type="text"
-               id="tin"
-               formControlName="tin"
-               (keydown)="tinChanged($event)">
-      </div>
-    </section>
 
-    <!-- Поля Физического лица -->
-    <form [formGroup]="physicalPersonForm"
-          action="submit"
-          *ngIf="isPhysicalPerson()">
-      <section class="physical-person-fields">
-        <div class="input">
-          <label for="fullname">ФИО</label>
-          <input type="text"
-                 id="fullname"
-                 formControlName="fullname">
-        </div>
-        <div class="input"
-             *ngIf="physicalPersonForm.get('fullname')?.valid">
-          <label for="phone">Телефон</label>
-          <input type="tel"
-                 id="phone"
-                 formControlName="phone"
-                 [textMask]="{mask: phoneMask}">
-        </div>
-      </section>
-    </form>
-    <form [formGroup]="legalPersonForm"
-          action="submit"
-          *ngIf="isLegalPerson()">
-      <div class="input">
-        <label for="name">Наименование организации</label>
-        <input type="text"
-               id="name"
-               formControlName="name">
-      </div>
-      <div class="input">
-        <label for="trrc">КПП</label>
-        <input type="text"
-               id="trrc"
-               formControlName="trrc"
-               [textMask]="{mask: trrcMask}">
-      </div>
-      <div class="input">
-        <label for="psrn">ОГРН</label>
-        <input type="text"
-               id="psrn"
-               formControlName="psrn"
-               [textMask]="{mask: psrnMask}">
-      </div>
-    </form>
-
-
-    <div class="input"
-         *ngIf="physicalPersonForm.valid || legalPersonForm.valid">
-      <label for="address">Адрес</label>
+    <div class="input">
+      <label for="INN">ИНН</label>
       <input type="text"
-             id="address"
-             formControlName="address">
-    </div>
-    <div class="passport-data"
-         *ngIf="form.get('address')?.valid">
-      <div class="input">
-        <label for="seria">Серия паспорта</label>
-        <input type="text"
-               id="seria"
-               formControlName="seria"
-               [textMask]="{mask: seriaMask}">
-      </div>
-      <div class="input">
-        <label for="number">Номер паспорта</label>
-        <input type="text"
-               id="number"
-               formControlName="number"
-               [textMask]="{mask: numberMask}">
-      </div>
-      <div class="input">
-        <label for="issueDate">Дата выдачи</label>
-        <input type="date"
-               id="issueDate"
-               formControlName="issueDate">
-      </div>
-      <div class="input">
-        <label for="issuedBy">Кем выдан</label>
-        <input type="text"
-               id="issuedBy"
-               formControlName="issuedBy">
-      </div>
+             id="INN"
+             [(ngModel)]="INN">
     </div>
 
-    <button class="add-client-button"
-            *ngIf="form.valid"
-            (click)="addClient()">Добавить клиента</button>
+    <div class="physical-person form"
+         *ngIf="INN?.length == 12 && INNValidate()">
+      <div class="input">
+        <label for="fullname">ФИО</label>
+        <input type="text"
+               id="fullname"
+               [(ngModel)]="physicalPerson.fullname">
+      </div>
+      <div class="input">
+        <label for="phone">Телефон</label>
+        <input type="text"
+               id="phone"
+               [textMask]="{mask: phoneMask}"
+               [(ngModel)]="physicalPerson.phone">
+      </div>
+      <div class="input">
+        <label for="address">Адрес</label>
+        <input type="text"
+               id="address"
+               [(ngModel)]="physicalPerson.address">
+      </div>
+
+      <button (click)="addPhysicalPersonClient()"
+      [disabled]="!physicalPersonFilled()">Добавить клиента</button>
+    </div>
   </div>
-
-</form>
+</div>

@@ -59,7 +59,7 @@ export class DocumentComponent implements OnInit {
     })
       .then(() => {
         this.database
-          .getSpecification(this.clientId, this.contractId)
+          .getFullSpecification(this.clientId, this.contractId)
           .subscribe(({ specification }: any) => {
             this.specification = specification;
           });

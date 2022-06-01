@@ -1,18 +1,35 @@
-.wrapper {
-  max-width: 500px;
+.container {
+  display: flex;
+}
+
+.input {
+  margin: 0.75rem 0;
+}
+
+.card {
+  // position: relative;
   display: flex;
   flex-direction: column;
+  width: 80%;
+
+  height: 750px;
+  overflow: scroll;
+  border: 1px solid var(--main-color);
+  border-radius: 20px;
+
+  padding: 5px;
+  margin: 0 auto;
+
+  &-title {
+    margin-bottom: 2rem;
+  }
+
+  select {
+    width: 45%;
+  }
 }
 
-.common-fields {
-  margin-bottom: 4rem;
-}
-
-.passport-data {
-  margin-bottom: 5rem;
-}
-
-.add-client-button {
-  padding: 0.5rem;
-  width: 50%;
+.form {
+  display: flex;
+  flex-direction: column;
 }

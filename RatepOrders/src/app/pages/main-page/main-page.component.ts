@@ -98,6 +98,55 @@ export class MainPageComponent implements OnInit {
     this.router.navigate([`new-order/${clientId}/${contractId}`]);
   }
 
+  setOrderStatus(
+    clientId: number,
+    contractId: number,
+    orderId: number,
+    statusId: number
+  ) {
+    this.database
+      .setOrderStatus({ clientId, contractId, orderId, statusId })
+      .subscribe(
+        (value) => {
+          alert('Статус заказа изменён');
+          location.reload();
+        },
+        (err) => alert(err.error.sqlMessage)
+      );
+  }
+  setContractStatus(
+    orders: any,
+    clientId: number,
+    contractId: number,
+    statusId: number
+  ) {
+    new Promise((resolve, reject) => {
+      orders.forEach((order: IOrder) => {
+        if (order.StatusId != 4) {
+          reject();
+          return;
+        }
+      });
+      resolve(statusId);
+    })
+      .then((value) => {
+        this.database
+          .setContractStatus({ clientId, contractId, statusId })
+          .subscribe(
+            (value) => {
+              alert('Статус договора изменён');
+              location.reload();
+            },
+            (err) => alert(err.error.sqlMessage)
+          );
+      })
+      .catch(() =>
+        alert(
+          'Для закрытия договора требуется выдать все заказы по данному договору'
+        )
+      );
+  }
+
   changeDate() {
     // Если начальная дата заказа позже конечной,
     if ((this.startDate || Date.now) > (this.endDate || Date.now)) {

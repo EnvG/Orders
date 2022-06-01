@@ -215,6 +215,52 @@ app.get("/specification/:clientId/:contractId", (req, res) => {
   }
 });
 
+app.get("/full-specification/:clientId/:contractId", (req, res) => {
+  let { clientId } = req.params;
+  let { contractId } = req.params;
+
+  try {
+    connection.query(
+      queries.getFullSpecifiction(clientId, contractId),
+      function (err, rows, fields) {
+        // В случае ошибки
+        if (err) {
+          // вывести ошибку в консоль и вернуть клиенту ошибку сервера
+          res.status(500);
+        }
+
+        // В случае успешного выполнения запроса
+        // вернуть спецификацию
+        res.status(200).json({
+          specification: rows[0],
+        });
+      }
+    );
+  } catch (error) {
+    res.status(500);
+  }
+});
+
+app.post("/add-physical-person-client", express.json(), (req, res) => {
+  let { INN, fullname, phone, address } = req.body;
+
+  new Promise((resolve, reject) => {
+    connection.query(
+      queries.addPhysicalPersonClient(INN, fullname, phone, address),
+      function (err, rows, fields) {
+        if (err) {
+          console.log(err.sqlMessage);
+          reject(err);
+        }
+
+        resolve({ message: "Клиент добавлен" });
+      }
+    );
+  })
+    .then((value) => res.status(200).json(value))
+    .catch((err) => res.status(400).json(err.sqlMessage));
+});
+
 app.get("/orders/:clientId/:contractId", (req, res) => {
   let { clientId } = req.params;
   let { contractId } = req.params;
@@ -457,10 +503,6 @@ app.post("/add-specification", express.json(), (req, res) => {
             return;
             // res.status(500).send(err.sqlMessage);
           }
-
-          // В случае успешного выполнения запроса
-          // вернуть код 200
-          // res.status(200).send("Договор оформлен");
         }
       );
     });
@@ -470,40 +512,34 @@ app.post("/add-specification", express.json(), (req, res) => {
   );
 });
 
-app.post("/new-order", express.json(), (req, res) => {
+app.post("/set-order-status", express.json(), (req, res) => {
+  let { clientId, contractId, orderId, statusId } = req.body;
+
   connection.query(
-    `SELECT MAX(OrderId) + 1 as orderId from RatepOrders.Order`,
+    queries.setOrderStatus(clientId, contractId, orderId, statusId),
     function (err, rows, fields) {
-      if (err) return;
+      if (err) {
+        res.status(400).json(err);
+        return;
+      }
 
-      const orderId = rows[0].orderId || 1;
-      const clientId = req.query["clientId"];
-      const employeeId = req.query["employeeId"];
-      const number = `RTP-${clientId}-` + `${orderId}`.padStart(3, "0");
-      const positions = req.body.positions;
-      const date = new Date();
-      const orderDate = `${date.getFullYear()}-${
-        date.getMonth() + 1
-      }-${date.getDate()}`;
-      const readyDate = req.body.readyDate;
-      connection.query(
-        `INSERT INTO RatepOrders.Order VALUES (${orderId}, "${number}", "${orderDate}", "${readyDate}", ${employeeId}, ${clientId})`
-      );
+      res.status(200).json();
+    }
+  );
+});
 
-      var i = 1;
-      positions.forEach((position) => {
-        console.log(
-          `INSERT INTO OrderPosition VALUES (${i}, ${orderId}, ${position.ProductId}, ${position.Amount})`
-        );
-        connection.query(
-          `INSERT INTO OrderPosition VALUES (${i}, ${orderId}, ${position.ProductId}, ${position.Amount})`
-        );
-        i++;
-      });
+app.post("/set-contract-status", express.json(), (req, res) => {
+  let { clientId, contractId, statusId } = req.body;
 
-      res.status(200).json({
-        in: req.body,
-      });
+  connection.query(
+    queries.setContractStatus(clientId, contractId, statusId),
+    function (err, rows, fields) {
+      if (err) {
+        res.status(400).json(err);
+        return;
+      }
+
+      res.status(200).json();
     }
   );
 });

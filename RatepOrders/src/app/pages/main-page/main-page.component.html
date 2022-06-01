@@ -69,14 +69,11 @@
               <td>
                 <p *ngIf="contract.StatusId === 4"
                    style="padding-left: 5px;">-</p>
-                <button *ngIf="contract.StatusId == 1"
-                        (click)="toSpecificationPage(contract.ClientId, contract.ContractId)">Сформировать</button>
                 <div class="button-list"
-                     *ngIf="contract.StatusId == 2">
-                  <button>Закрыть</button>
+                     *ngIf="contract.StatusId == 1">
+                  <button (click)="setContractStatus(contract.Orders, contract.ClientId, contract.ContractId, 5)">Закрыть</button>
                   <button (click)="toNewOrderPage(contract.ClientId, contract.ContractId)">Новый заказ</button>
                 </div>
-                <button *ngIf="contract.StatusId == 3">Выдать клиенту</button>
               </td>
             </tr>
             <td colspan="7"
@@ -93,14 +90,20 @@
 
                 <tbody>
                   <ng-container *ngFor="let order of contract.Orders">
-                    <tr style="cursor: pointer"
-                        (click)="viewToggle(order)">
-                      <td>{{order.OrderId}}</td>
-                      <td>{{order.OrderDate | date : 'dd.MM.yyyy' : 'ru'}}</td>
-                      <td class="status">{{order.StatusName}}</td>
+                    <tr style="cursor: pointer">
+                      <td (click)="viewToggle(order)">{{order.OrderId}}</td>
+                      <td (click)="viewToggle(order)">
+                        {{order.OrderDate | date : 'dd.MM.yyyy' : 'ru'}}</td>
+                      <td class="status"
+                          (click)="viewToggle(order)">{{order.StatusName}}</td>
                       <td>
                         <div class="button-list">
-                          <button *ngIf="order.StatusId == 2">Готов</button>
+                          <button *ngIf="order.StatusId == 2"
+                                  (click)="setOrderStatus(order.ClientId, order.ContractId, order.OrderId, 3)">Готов</button>
+                          <button *ngIf="order.StatusId == 3"
+                                  (click)="setOrderStatus(order.ClientId, order.ContractId, order.OrderId, 4)">Выдать
+                            клиенту</button>
+
                         </div>
                       </td>
                     </tr>

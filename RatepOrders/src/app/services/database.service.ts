@@ -31,6 +31,14 @@ export class DatabaseService {
     );
   }
 
+  setOrderStatus(body: any) {
+    return this.httpClient.post(`${ADDRESS}/set-order-status`, body);
+  }
+
+  setContractStatus(body: any) {
+    return this.httpClient.post(`${ADDRESS}/set-contract-status`, body);
+  }
+
   checkToken() {
     let token = this.cookies.getCookie('token');
     let login = this.cookies.getCookie('login');
@@ -124,6 +132,16 @@ export class DatabaseService {
     );
   }
 
+  getFullSpecification(clientId: number, contractId: number) {
+    return this.httpClient.get(
+      `${ADDRESS}/full-specification/${clientId}/${contractId}`
+    );
+  }
+
+  addPhysicalPersonClient(body: any) {
+    return this.httpClient.post(`${ADDRESS}/add-physical-person-client`, body);
+  }
+
   // Метод get-запроса к серверу
   async get(endpoint: string) {
     let response = await fetch(`${ADDRESS}/${endpoint}`);
@@ -139,10 +157,6 @@ export class DatabaseService {
       // иначе вернуть null
       return null;
     }
-  }
-
-  addPhysicalPersonClient(body: any) {
-    return this.post('new-physical-person-client', body);
   }
 
   addLegalPersonClient(body: any) {

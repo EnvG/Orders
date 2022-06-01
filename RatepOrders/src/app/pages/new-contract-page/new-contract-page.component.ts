@@ -59,7 +59,6 @@ export class NewContractPageComponent implements OnInit {
     });
   }
 
-
   getProducts() {
     this.specification.forEach((spec: Specification) => {
       if ((spec.Amount || 0) < 0) {
@@ -81,6 +80,12 @@ export class NewContractPageComponent implements OnInit {
     return sum;
   }
 
+  checkDate() {
+    return (
+      (this.startDate || Date.now()) < (this.endDate || Date.now())
+    );
+  }
+
   addContract() {
     let login = this.cookiesService.getCookie('login');
     let body = {
@@ -91,17 +96,15 @@ export class NewContractPageComponent implements OnInit {
       products: this.getProducts(),
     };
 
-    this.database
-      .addContract(body)
-      .subscribe({
-        next: (data) => {
-          alert('Договор оформлен');
-          this.router.navigate(['main']);
-        },
-        error: (error) => {
-          alert(error.error);
-          console.log(error.error);
-        },
-      });
+    this.database.addContract(body).subscribe({
+      next: (data) => {
+        alert('Договор оформлен');
+        this.router.navigate(['main']);
+      },
+      error: (error) => {
+        alert(error.error);
+        console.log(error.error);
+      },
+    });
   }
 }

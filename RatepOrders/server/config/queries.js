@@ -18,6 +18,8 @@ Staff E ON U.UserId = E.UserId
   // Запрос на получение спецификации договора
   getSpecification: (clientId, contractId) =>
     `CALL GetSpecification(${clientId}, ${contractId})`,
+  getFullSpecifiction: (clientId, contractId) =>
+    `CALL GetFullSpecification(${clientId}, ${contractId})`,
   // Запрос на получение списка заказов
   getOrders: (clientId, contractId) =>
     `CALL GetOrders (${clientId}, ${contractId})`,
@@ -30,6 +32,10 @@ Staff E ON U.UserId = E.UserId
     `CALL AddSpecification(${clientId}, ${productId}, ${amount})`,
   setOrderStatus: (clientId, contractId, orderId, statusId) =>
     `CALL SetOrderStatus (${clientId}, ${contractId}, ${orderId}, ${statusId})`,
+  setContractStatus: (clientId, contractId, statusId) =>
+    `CALL SetContractStatus (${clientId}, ${contractId}, ${statusId})`,
+  addPhysicalPersonClient: (INN, fullname, phone, address) =>
+    `CALL addPhysicalPersonClient('${INN}', '${fullname}', '${phone}', '${address}')`,
   // Запрос на получение позиций заказа по ID заказа
   getPositions: (orderId) => `
     SELECT

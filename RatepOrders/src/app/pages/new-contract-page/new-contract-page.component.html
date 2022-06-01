@@ -69,7 +69,7 @@
     </div>
     <span class="sum price">Итого: {{getSum() | number : '1.2-2' : 'ru'}}</span>
     <button (click)="addContract()"
-            [disabled]="!(client && startDate && endDate && getProducts().length > 0)">Оформить
+            [disabled]="!(client && startDate && endDate && checkDate() && getProducts().length > 0)">Оформить
       договор</button>
 
   </div>
