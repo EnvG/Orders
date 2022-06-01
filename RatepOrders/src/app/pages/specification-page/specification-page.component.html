@@ -1,0 +1,37 @@
+<div class="wrapper">
+  <app-menu></app-menu>
+
+  <div class="card">
+    <h1 class="title">Формирование спецификации договора</h1>
+
+    <table>
+      <col style="width: auto;">
+      <col style="width: 200px;">
+      <col style="width: auto;">
+      <col style="width: 250px;">
+
+      <thead>
+        <th>Изделие</th>
+        <th>Количество</th>
+        <th>Стоимость</th>
+        <th>Сумма</th>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let specification of specification"
+        [ngClass]="{selected: specification.Amount > 0}">
+          <td>{{specification.ProductName}}</td>
+          <td><input type="number"
+                   [(ngModel)]="specification.Amount"
+                   min="0"></td>
+          <td>{{specification.PriceValue | number : '1.2-2' : 'ru'}}</td>
+          <td>{{(specification.PriceValue || 0) * (specification.Amount || 0) | number : '1.2-2' : 'ru'}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <span class="sum">Итого: {{getSpecificationSum() | number : '1.2-2' : 'ru'}}</span>
+
+    <button [disabled]="getSpecification().length === 0"
+    (click)="addSpecification()">Сформировать</button>
+  </div>
+</div>

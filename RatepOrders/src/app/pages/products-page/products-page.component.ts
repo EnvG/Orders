@@ -24,18 +24,18 @@ export class ProductsPageComponent implements OnInit {
   constructor(private database: DatabaseService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.database.getProducts().then((result: any[]) => {
-      this.products = result.map<Product>((value: any) => {
-        return {
-          ProductId: value.ProductId,
-          InitProductName: value.ProductName,
-          ProductName: value.ProductName,
-          initPriceValue: value.PriceValue,
-          PriceValue: value.PriceValue,
-          ChangeDate: value.changeDate,
-        };
-      });
-    });
+    // this.database.getProducts().subscribe(({products}: any[]) => {
+    //   this.products = products.map<Product>((value: any) => {
+    //     return {
+    //       ProductId: value.ProductId,
+    //       InitProductName: value.ProductName,
+    //       ProductName: value.ProductName,
+    //       initPriceValue: value.PriceValue,
+    //       PriceValue: value.PriceValue,
+    //       ChangeDate: value.changeDate,
+    //     };
+    //   });
+    // });
 
     this.minDay.setDate(this.minDay.getDate() + 2);
   }

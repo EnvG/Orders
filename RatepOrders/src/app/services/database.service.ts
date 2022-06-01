@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ISpecification } from '../models/specification';
 import { CookiesService } from './cookies.service';
 const config = require('../../../server/config/keys');
 const URL = config.SERVER.HOST;
@@ -57,13 +58,33 @@ export class DatabaseService {
   }
 
   // Получение всех изделий из базы данных
-  async getProducts() {
-    return await this.get('products');
+  getProducts() {
+    return this.httpClient.get(`${ADDRESS}/price-list`);
   }
 
   // Получение всех клиентов из базы данных
-  async getClients() {
-    return await this.get('clients');
+  getClients() {
+    return this.httpClient.get(`${ADDRESS}/clients`);
+  }
+
+  addContract(body: any) {
+    return this.httpClient.post(`${ADDRESS}/add-contract`, body);
+  }
+
+  getPriceList() {
+    return this.httpClient.get(`${ADDRESS}/price-list`);
+  }
+
+  addSpecification(specification: ISpecification[]) {
+    return this.httpClient.post(`${ADDRESS}/add-specification`, specification);
+  }
+
+  addOrder(body: any) {
+    return this.httpClient.post(`${ADDRESS}/add-order`, body);
+  }
+
+  getContract(clientId: number, contractId: number) {
+    return this.httpClient.get(`${ADDRESS}/contract/${clientId}/${contractId}`);
   }
 
   updateProduct(

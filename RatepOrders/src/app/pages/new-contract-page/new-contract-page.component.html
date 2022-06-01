@@ -1,0 +1,76 @@
+<div class="wrapper">
+  <app-menu></app-menu>
+
+  <div class="container">
+
+    <div class="card">
+      <h1 class="card-title">Новый договор</h1>
+      <div class="client-info">
+        <div class="input"
+             style="min-width: 450px; width: auto;">
+          <label for="INN">ИНН клиента</label>
+          <select id="INN"
+                  type="text"
+                  style="width: 100%;"
+                  [(ngModel)]="client">
+            <option *ngFor="let client of clients"
+                    [ngValue]="client">
+              {{client.INN}}
+            </option>
+          </select>
+        </div>
+        <p class="name">{{client?.Fullname || client?.Name}}</p>
+      </div>
+
+      <div class="contract-info">
+        <div class="input"
+             style="min-width: 250px; width: 250px;">
+          <label for="startDate">Дата начала действия договора</label>
+          <input id="startDate"
+                 type="date"
+                 style="width: 100%;"
+                 [(ngModel)]="startDate" />
+        </div>
+        <div class="input"
+             style="min-width: 250px; width: 250px;">
+          <label for="endDate">Дата окончания действия договора</label>
+          <input id="endDate"
+                 type="date"
+                 style="width: 100%;"
+                 [(ngModel)]="endDate" />
+        </div>
+      </div>
+
+      <table>
+        <col style="width: auto">
+        <col style="width: 200px">
+        <col style="width: 200px">
+        <col style="width: 200px">
+        <thead>
+          <th>Изделие</th>
+          <th>Количество</th>
+          <th>Цена</th>
+          <th>Сумма</th>
+        </thead>
+        <tbody>
+
+          <tr *ngFor="let product of specification"
+              [ngClass]="{'selected': (product.Amount || 0) > 0}">
+            <td>{{product.ProductName}}</td>
+            <td><input type="number"
+                     style="background-color: transparent;"
+                     min="0"
+                     [(ngModel)]="product.Amount"></td>
+            <td class="price">{{product.PriceValue | number : '1.2-2' : 'ru'}}</td>
+            <td class="price">{{(product.Amount || 0) * (product.PriceValue || 0) | number : '1.2-2' : 'ru'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <span class="sum price">Итого: {{getSum() | number : '1.2-2' : 'ru'}}</span>
+    <button (click)="addContract()"
+            [disabled]="!(client && startDate && endDate && getProducts().length > 0)">Оформить
+      договор</button>
+
+  </div>
+</div>

@@ -47,44 +47,43 @@ app.get("/auth/:login/:password", (req, res) => {
   let { login } = req.params;
   let { password } = req.params;
 
-  // Ключ для генерации токена
-  key = Date.now();
-
   // Запрос к базе данных
-  connection.query(
-    queries.auth(login, password, key),
-    function (err, rows, fields) {
+  connection.query(queries.auth(login, password), function (err, rows, fields) {
+    try {
       // В случае ошибки
       if (err) {
         // вывести ошибку в консоль и вернуть клиенту ошибку сервера
-        console.log(err);
-        res.status(500);
+        console.log("err");
+        res.status(500).send(err);
+        return;
       }
 
-      try {
-        // Токен пользователя
-        let { token } = rows[0][0];
+      // Токен пользователя
+      let token = rows[0][0].token;
+      let key = rows[0][0].key;
 
-        // В случае успешного выполнения запроса
-        // если токен получен [успешная авторизация],
-        if (token) {
-          // вернуть HTTP-код 200 (OK)
-          // с телом, содержащим токен и ключ токена
-          res.status(200).json({
-            token: token,
-            key: key,
-          });
-        }
-        // если токен не получен [неверный логин или пароль],
-        else {
-          // вернуть HTTP-код 204 (no content)
-          res.status(204).json();
-        }
-      } catch (e) {
-        res.status(500);
+      console.log(rows[0], token, key);
+
+      // В случае успешного выполнения запроса
+      // если токен получен [успешная авторизация],
+      if (token) {
+        // вернуть HTTP-код 200 (OK)
+        // с телом, содержащим токен и ключ токена
+        res.status(200).json({
+          token: token,
+          key: key,
+        });
       }
+      // если токен не получен [неверный логин или пароль],
+      else {
+        // вернуть HTTP-код 204 (no content)
+        res.status(204).send();
+      }
+    } catch (error) {
+      console.log("ERR");
+      res.status(204).send(error);
     }
-  );
+  });
 });
 
 // Проверка токена
@@ -121,7 +120,7 @@ app.get("/users", (req, res) => {
     if (err) {
       // вывести ошибку в консоль и вернуть клиенту ошибку сервера
       console.log(err);
-      res.status(500);
+      res.status(500).json();
     }
 
     // В случае успешного выполнения запроса
@@ -166,6 +165,28 @@ app.get("/contracts", (req, res) => {
       contracts: rows,
     });
   });
+});
+app.get("/contract/:clientId/:contractId", (req, res) => {
+  let { clientId } = req.params;
+  let { contractId } = req.params;
+
+  connection.query(
+    queries.getContract(clientId, contractId),
+    function (err, rows, fields) {
+      // В случае ошибки
+      if (err) {
+        // вывести ошибку в консоль и вернуть клиенту ошибку сервера
+        console.log(err);
+        res.status(500);
+      }
+
+      // В случае успешного выполнения запроса
+      // вернуть список договоров
+      res.status(200).json({
+        contract: rows[0],
+      });
+    }
+  );
 });
 
 app.get("/specification/:clientId/:contractId", (req, res) => {
@@ -217,6 +238,7 @@ app.get("/orders/:clientId/:contractId", (req, res) => {
   );
 });
 
+// Получение состава заказа
 app.get("/order-composition/:clientId/:contractId/:orderId", (req, res) => {
   let { clientId } = req.params;
   let { contractId } = req.params;
@@ -239,6 +261,24 @@ app.get("/order-composition/:clientId/:contractId/:orderId", (req, res) => {
       });
     }
   );
+});
+
+// Получение списка клиентов
+app.get("/clients", (req, res) => {
+  connection.query(queries.getClients(), function (err, rows, fields) {
+    // В случае ошибки
+    if (err) {
+      // вывести ошибку в консоль и вернуть клиенту ошибку сервера
+      console.log(err);
+      res.status(500);
+    }
+
+    // В случае успешного выполнения запроса
+    // вернуть список договоров
+    res.status(200).json({
+      clients: rows,
+    });
+  });
 });
 
 app.get("/post-id/:login", (req, res) => {
@@ -275,6 +315,159 @@ app.get("/products", (req, res) => {
       result: rows,
     });
   });
+});
+
+app.post("/add-order", express.json(), (req, res) => {
+  let { body } = req;
+  let { clientId } = body;
+  let { contractId } = body;
+  let { composition } = body;
+
+  console.log(clientId, contractId);
+
+  new Promise((resolve, reject) => {
+    connection.query(
+      queries.addOrder(clientId, contractId),
+      function (err, rows, fields) {
+        // В случае ошибки
+        if (err) {
+          // вывести ошибку в консоль и вернуть клиенту ошибку сервера
+          console.log(err.sqlMessage);
+          reject(err);
+          // res.status(500).send(err.sqlMessage);
+        }
+
+        composition.forEach((comp) => {
+          connection.query(
+            queries.addOrderComposition(
+              clientId,
+              contractId,
+              comp.ProductId,
+              comp.Amount
+            ),
+            function (err, rows, fields) {
+              console.log(
+                queries.addOrderComposition(
+                  clientId,
+                  contractId,
+                  comp.ProductId,
+                  comp.Amount
+                )
+              );
+              if (err) {
+                reject(err);
+                return;
+              }
+            }
+          );
+        });
+
+        resolve(res);
+      }
+    );
+  }).then(
+    (result) => res.status(200).send(),
+    (error) => res.status(500).send(error.sqlMessage)
+  );
+});
+
+app.post("/add-contract", express.json(), (req, res) => {
+  let { login } = req.body;
+  let { clientId } = req.body;
+  let { startDate } = req.body;
+  let { endDate } = req.body;
+  let { products } = req.body;
+
+  new Promise((resolve, reject) => {
+    connection.query(
+      queries.addContract(login, clientId, startDate, endDate),
+      function (err, rows, fields) {
+        // В случае ошибки
+        if (err) {
+          // вывести ошибку в консоль и вернуть клиенту ошибку сервера
+          console.log(err.sqlMessage);
+          reject(err);
+          // res.status(500).send(err.sqlMessage);
+        }
+
+        products.forEach((product) => {
+          connection.query(
+            queries.addSpecification(
+              clientId,
+              product.ProductId,
+              product.Amount
+            ),
+            function (err, rows, fields) {
+              console.log(clientId, product.ProductId, product.Amount);
+              if (err) {
+                reject(err);
+                return;
+              }
+            }
+          );
+        });
+
+        // В случае успешного выполнения запроса
+        // вернуть код 200
+        resolve(res);
+        // res.status(200).send("Договор оформлен");
+      }
+    );
+  }).then(
+    (result) => res.status(200).send(),
+    (error) => res.status(500).send(error.sqlMessage)
+  );
+});
+
+app.get("/price-list", (req, res) => {
+  connection.query(queries.getPriceList(), function (err, rows, fields) {
+    // В случае ошибки
+    if (err) {
+      // вывести ошибку в консоль и вернуть клиенту ошибку сервера
+      console.log(err);
+      res.status(500);
+    }
+
+    // В случае успешного выполнения запроса
+    // вернуть список изделий
+    res.status(200).json({
+      products: rows,
+    });
+  });
+});
+
+app.post("/add-specification", express.json(), (req, res) => {
+  let body = req.body;
+
+  new Promise((resolve, reject) => {
+    body.forEach((specification) => {
+      connection.query(
+        queries.addSpecification(
+          specification.ClientId,
+          specification.ContractId,
+          specification.ProductId,
+          specification.Amount
+        ),
+        function (err, rows, fields) {
+          // В случае ошибки
+          if (err) {
+            // вывести ошибку в консоль и вернуть клиенту ошибку сервера
+            console.log(err.sqlMessage);
+            reject(err);
+            return;
+            // res.status(500).send(err.sqlMessage);
+          }
+
+          // В случае успешного выполнения запроса
+          // вернуть код 200
+          // res.status(200).send("Договор оформлен");
+        }
+      );
+    });
+  }).then(
+    (result) => res.status(200).send(),
+    (error) => res.status(500).send(error.sqlMessage)
+  );
 });
 
 app.post("/new-order", express.json(), (req, res) => {
@@ -314,19 +507,6 @@ app.post("/new-order", express.json(), (req, res) => {
     }
   );
 });
-
-app.get("/getClientName", (req, res) => {
-  let clietnId = req.query["clientId"];
-});
-
-// app.get("/clients", (req, res) => {
-//   connection.query(queries.getClients(), function (err, rows, fields) {
-//     if (err) return;
-//     res.status(200).json({
-//       result: rows,
-//     });
-//   });
-// });
 
 app.post("/new-physical-person-client", express.json(), (req, res) => {
   connection.query(
@@ -368,7 +548,7 @@ app.post("/new-legal-person-client", express.json(), (req, res) => {
   connection.query(
     `SELECT MAX(ClientId) + 1 as ClientId FROM Client`,
     function (err, rows, fields) {
-      if (err) return;
+      // if (err) return;
 
       let clientId = rows[0].ClientId || 1;
       let body = req.body;

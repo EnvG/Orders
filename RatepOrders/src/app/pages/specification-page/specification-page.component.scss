@@ -1,0 +1,24 @@
+.wrapper {
+  display: flex;
+}
+
+.card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 5px;
+}
+
+.selected {
+  background-color: var(--selection-color);
+}
+
+.sum {
+  display: flex;
+  justify-content: flex-end;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-right: 20px;
+  font-size: 1.4rem;
+}

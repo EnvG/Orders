@@ -1,7 +1,6 @@
 module.exports = {
   // Запрос авторизации пользователя
-  auth: (login, password, key) =>
-    `CALL Auth ('${login}', '${password}', '${key}')`,
+  auth: (login, password) => `CALL Auth ('${login}', '${password}')`,
   checkToken: (token, login, key) =>
     `SELECT CheckToken('${token}', '${login}', '${key}') AS access`,
   // Запрос на получение всех пользователей
@@ -14,11 +13,23 @@ Staff E ON U.UserId = E.UserId
     WHERE UserLogin = "${login}"`,
   // Запрос на получение списка договоров
   getContracts: () => "SELECT * FROM Contracts",
+  getContract: (clieintId, contractId) =>
+    `CALL GetContract(${clieintId}, ${contractId})`,
   // Запрос на получение спецификации договора
-  getSpecification: (clientId, contractId) => `CALL GetSpecification(${clientId}, ${contractId})`,
+  getSpecification: (clientId, contractId) =>
+    `CALL GetSpecification(${clientId}, ${contractId})`,
   // Запрос на получение списка заказов
-  getOrders: (clientId, contractId) => `CALL GetOrders (${clientId}, ${contractId})`,
-  getOrderComposition: (clientId, contractId, orderId) => `CALL GetOrderComposition(${clientId}, ${contractId}, ${orderId})`,
+  getOrders: (clientId, contractId) =>
+    `CALL GetOrders (${clientId}, ${contractId})`,
+  getOrderComposition: (clientId, contractId, orderId) =>
+    `CALL GetOrderComposition(${clientId}, ${contractId}, ${orderId})`,
+  addContract: (login, clientId, startDate, endDate) =>
+    `CALL AddContract ('${login}', ${clientId}, '${startDate}', '${endDate}')`,
+  getPriceList: () => "SELECT * FROM PriceList",
+  addSpecification: (clientId, productId, amount) =>
+    `CALL AddSpecification(${clientId}, ${productId}, ${amount})`,
+  setOrderStatus: (clientId, contractId, orderId, statusId) =>
+    `CALL SetOrderStatus (${clientId}, ${contractId}, ${orderId}, ${statusId})`,
   // Запрос на получение позиций заказа по ID заказа
   getPositions: (orderId) => `
     SELECT
@@ -51,6 +62,10 @@ WHERE
         WHERE
             ProductId = P.ProductId
                 AND ChangeDate <= O.OrderDate)`,
+  addOrder: (clientId, contractId) =>
+    `CALL AddOrder('${clientId}', '${contractId}')`,
+  addOrderComposition: (clientId, contractId, productId, amount) =>
+    `CALL AddOrderComposition(${clientId}, ${contractId}, ${productId}, ${amount})`,
   // Запрос на получение всех изделий
   getProducts: () => `SELECT
                 P.ProductId, P.ProductName, Pr.PriceValue, Pr.ChangeDate
@@ -74,33 +89,5 @@ WHERE
                         ProductId = P.ProductId
                             AND ChangeDate <= SYSDATE())`,
   // Запрос на получение всех клиентов
-  getClients: () => `SELECT
-  ClientId,
-  INN as INN,
-  (SELECT
-          Fullname
-      FROM
-          PhysicalPerson
-      WHERE
-          ClientId = C.ClientId) as Fullname,
-  (SELECT
-          Name
-      FROM
-          JuridicalPerson
-      WHERE
-          ClientId = C.ClientId) as Name,
-  (SELECT
-          KPP
-      FROM
-          JuridicalPerson
-      WHERE
-          ClientId = C.ClientId) as KPP,
-          (SELECT
-          OGRN
-      FROM
-          JuridicalPerson
-      WHERE
-          ClientId = C.ClientId) as OGRN
-FROM
-  Client C`,
+  getClients: () => `SELECT * FROM Clients`,
 };

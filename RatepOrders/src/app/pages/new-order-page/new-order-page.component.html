@@ -1,45 +1,41 @@
-<div class="input">
-  <label for="client-tin">ИНН клиента</label>
-  <select id="client-tin"
-          [(ngModel)]="selectedClientId">
-    <option *ngFor="let client of clients"
-            [value]="client.ClientId">{{client.Tin}}</option>
-  </select>
+<div class="wrapper">
+  <app-menu></app-menu>
+
+  <div class="card">
+    <h1 class="title">Оформление нового заказа</h1>
+
+    <table>
+      <col style="width: auto;">
+      <col style="width: 200px;">
+      <col style="width: 200px;">
+      <col style="width: 250px;">
+      <col style="width: 250px;">
+
+      <thead>
+        <th>Изделие</th>
+        <th>Количество</th>
+        <th>Максимум</th>
+        <th>Стоимость</th>
+        <th>Сумма</th>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let composition of composition"
+            [ngClass]="{'selected': composition.Amount > 0 && composition.Amount <= composition.MaxAmount}">
+          <td>{{composition.ProductName}}</td>
+          <td><input type="number"
+                   style="background-color: transparent;"
+                   [(ngModel)]="composition.Amount"
+                   [max]="composition.MaxAmount"></td>
+          <td>{{composition.MaxAmount}}</td>
+          <td class="price">{{composition.PriceValue}}</td>
+          <td class="price">{{composition.Amount * composition.PriceValue | number : '1.2-2' : 'ru'}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="price sum">Итого: {{getSum() | number : '1.2-2' : 'ru'}}</p>
+
+    <button (click)="createOrder()"
+            [disabled]="getOrder().length <= 0">Сформировать</button>
+  </div>
 </div>
-<div class="input">
-  <label for="ready-date">Дата готовности заказа</label>
-  <input type="date"
-         [(ngModel)]="readyDate"
-         id="ready-date">
-</div>
-
-<p *ngIf="selectedClientId == undefined"
-   class="info">Для продолжения выберите ИНН клиента</p>
-
-<table *ngIf="selectedClientId != undefined">
-  <col style="width: 50%;">
-  <col style="width: 10%;">
-  <col style="width: 30%;">
-  <col style="width: 10%;">
-  <thead>
-    <th>Изделие</th>
-    <th>Количество</th>
-    <th>Цена</th>
-    <th>Сумма</th>
-  </thead>
-
-  <tbody>
-    <tr *ngFor="let product of products"
-        [ngClass]="{selected: product.Amount != 0}">
-      <td>{{product.ProductName}}</td>
-      <input type="number"
-             [(ngModel)]="product.Amount"
-             [min]="0">
-      <td>{{product.PriceValue}}</td>
-      <td class="price">{{product.PriceValue * (product.Amount || 0) | number: '1.2-2'}}</td>
-    </tr>
-  </tbody>
-</table>
-
-<button (click)="createOrder()"
-        [disabled]="getSelectedPositions().length == 0">Оформить заказ</button>

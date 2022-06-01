@@ -8,19 +8,26 @@ import { ClientsPageComponent } from './pages/clients-page/clients-page.componen
 import { DocumentComponent } from './pages/document/document.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 import { NewClientPageComponent } from './pages/new-client-page/new-client-page.component';
+import { NewContractPageComponent } from './pages/new-contract-page/new-contract-page.component';
 import { NewOrderPageComponent } from './pages/new-order-page/new-order-page.component';
 import { ProductsPageComponent } from './pages/products-page/products-page.component';
+import { SpecificationPageComponent } from './pages/specification-page/specification-page.component';
 
 const routes: Routes = [
   { path: '', component: AuthPageComponent },
   // Страницы Менеджера
   { path: 'main', component: MainPageComponent },
   {
-    path: 'new-order',
-    component: NewOrderPageComponent,
+    path: 'new-contract',
+    component: NewContractPageComponent,
   },
   {
-    path: 'document/:id',
+    path: 'specification/:clientId/:contractId',
+    component: SpecificationPageComponent,
+  },
+  { path: 'new-order/:clientId/:contractId', component: NewOrderPageComponent },
+  {
+    path: 'document/:clientId/:contractId',
     component: DocumentComponent,
   },
   {

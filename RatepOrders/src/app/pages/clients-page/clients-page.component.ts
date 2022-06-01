@@ -1,15 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatabaseService } from 'src/app/services/database.service';
-
-interface Client {
-  ClientId: number;
-  Tin: string;
-  Fullname?: string;
-  OrganizationName?: string;
-  KPP?: string;
-  OGRN?: string;
-}
+import { IClient } from '../../models/client';
 
 @Component({
   selector: 'app-clients-page',
@@ -18,7 +10,7 @@ interface Client {
 })
 export class ClientsPageComponent implements OnInit {
   search?: string;
-  clients: Client[] = [];
+  clients: IClient[] = [];
 
   viewPhisycalPersons: boolean = true;
   viewLegalPersons: boolean = true;
@@ -26,8 +18,8 @@ export class ClientsPageComponent implements OnInit {
   constructor(private database: DatabaseService, private router: Router) {}
 
   ngOnInit(): void {
-    this.database.getClients().then((result: Client[]) => {
-      this.clients = result;
+    this.database.getClients().subscribe(({ clients }: any) => {
+      this.clients = clients;
     });
   }
 
@@ -36,7 +28,7 @@ export class ClientsPageComponent implements OnInit {
       (client) =>
         (this.viewPhisycalPersons && client.Fullname) ||
         (this.viewLegalPersons &&
-          client.OrganizationName &&
+          client.Name &&
           client.KPP &&
           client.OGRN)
     );

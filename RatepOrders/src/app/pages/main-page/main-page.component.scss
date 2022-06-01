@@ -26,7 +26,7 @@
       min-width: 550px;
       display: flex;
       flex-direction: column;
-      border: 1px dashed var(--main-color);
+      border: 1px solid var(--main-color);
       padding: 25px 30px;
 
       p {
@@ -49,6 +49,8 @@
   display: flex;
   flex-direction: column;
   min-height: 200px;
+
+  overflow: scroll;
 }
 
 .contract-link {
@@ -86,19 +88,19 @@ ng-container {
 
   th {
     border: none;
-    border-bottom: 2px dashed var(--main-color);
-    border-left: 1px dashed var(--main-color);
+    border-bottom: 2px solid var(--main-color);
+    border-left: 1px solid var(--main-color);
     font-size: 1rem;
   }
 
-  tr:nth-child(2n) {
+  & > tbody > tr:nth-child(3n) {
     background-color: var(--selection-color);
   }
 
   td {
     border: none;
-    border-bottom: 3px dashed var(--main-color);
-    border-left: 1px dashed var(--main-color);
+    border-bottom: 3px solid var(--main-color);
+    border-left: 1px solid var(--main-color);
     font-size: 1rem;
   }
 }
@@ -117,7 +119,7 @@ ng-container {
     font-size: 1rem;
   }
 
-  tr:nth-child(2n) {
+    tr:nth-child(2n) {
     background-color: var(--selection-color);
   }
 
@@ -126,5 +128,19 @@ ng-container {
     border-bottom: 1px solid var(--main-color);
     border-left: 1px solid var(--main-color);
     font-size: 1rem;
+  }
+}
+
+.button-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px;
+
+  button {
+    width: 90%;
+    height: 50px;
+
+    margin: 5px auto;
   }
 }

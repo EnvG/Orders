@@ -4,7 +4,7 @@ import { Interface } from 'readline';
 import { DatabaseService } from 'src/app/services/database.service';
 import { IContract } from '../../models/contract';
 import { ISpecification } from 'src/app/models/specification';
-import { Order } from 'src/app/models/order';
+import { IOrder } from 'src/app/models/order';
 import { resolve } from 'dns';
 
 @Component({
@@ -51,7 +51,7 @@ export class MainPageComponent implements OnInit {
             this.database
               .getOrders(contract.ClientId, contract.ContractId)
               .subscribe(({ orders }: any) => {
-                (<Order[]>orders).forEach((order: Order) => {
+                (<IOrder[]>orders).forEach((order: IOrder) => {
                   new Promise((resolve, reject) => {
                     // (4)(1) Заполнение состава заказов
                     this.database
@@ -86,8 +86,16 @@ export class MainPageComponent implements OnInit {
     item.UI = { Visible: !item.UI?.Visible };
   }
 
-  createOrder() {
-    this.router.navigate(['new-order']);
+  toNewContractPage() {
+    this.router.navigate(['new-contract']);
+  }
+
+  toSpecificationPage(clientId: number, contractId: number) {
+    this.router.navigate([`specification/${clientId}/${contractId}`]);
+  }
+
+  toNewOrderPage(clientId: number, contractId: number) {
+    this.router.navigate([`new-order/${clientId}/${contractId}`]);
   }
 
   changeDate() {
@@ -131,40 +139,4 @@ export class MainPageComponent implements OnInit {
       );
     });
   }
-
-  // // Получение позиций заказа по его номеру
-  // getOrderPositions(orderId: number) {
-  //   return this.positions.filter((position) => position.OrderId == orderId);
-  // }
-
-  // // Получить сумму заказа по его номеру
-  // getOrderSum(orderId: number) {
-  //   let sum = 0;
-
-  //   const positions = this.getOrderPositions(orderId);
-  //   positions.forEach((position) => {
-  //     // Сумма вычисляется как сумма произведений количество на цену каждой позиции
-  //     sum += position.Amount * position.PriceValue;
-  //   });
-
-  //   return sum;
-  // }
-
-  // // Сменить состояние заказа (свернуть / развернуть)
-  // orderActiveToggle(order: Order) {
-  //   order.UI = { active: !order.UI?.active };
-  // }
-
-  // filteredOrders() {
-  //   return this.orders.filter(
-  //     (order) =>
-  //       (order.OrderDate >= (this.orderStartDate || order.OrderDate) &&
-  //         order.OrderDate <= (this.orderEndDate || order.OrderDate) &&
-  //         (order.Fullname || order.OrganizationName)?.includes(
-  //           this.search || order.Fullname || order.OrganizationName || ''
-  //         )) ||
-  //       order.Number.startsWith(this.search || order.Number) ||
-  //       order.Tin.startsWith(this.search || order.Tin)
-  //   );
-  // }
 }

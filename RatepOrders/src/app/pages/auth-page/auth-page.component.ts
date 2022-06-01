@@ -44,7 +44,6 @@ export class AuthPageComponent implements OnInit {
   }
 
   async auth() {
-
     // Введённый логин
     const login = this.login?.value;
     // Введённый пароль
@@ -52,19 +51,23 @@ export class AuthPageComponent implements OnInit {
 
     this.database.auth(login, password).subscribe(
       (result: any) => {
-        let { token } = result;
-        let { key } = result;
+        if (result) {
+          let { token } = result;
+          let { key } = result;
 
-        // Установка cookies
-        this.cookiesService.setCookie('token', token, 30);
-        this.cookiesService.setCookie('key', key, 30);
-        this.cookiesService.setCookie('login', login, 30);
+          // Установка cookies
+          this.cookiesService.setCookie('token', token, 30);
+          this.cookiesService.setCookie('key', key, 30);
+          this.cookiesService.setCookie('login', login, 30);
 
-        // Переход на следующую страницу
-        this.nextPage();
+          // Переход на следующую страницу
+          this.nextPage();
+        } else {
+          alert('Неверный логин или пароль');
+        }
       },
       (err) => {
-        alert('Неверный логин или пароль');
+        alert('Ошибка сервера. Обратитесь к администратору');
       }
     );
 
@@ -90,7 +93,7 @@ export class AuthPageComponent implements OnInit {
   nextPage() {
     // Перенаправление
     this.database.getPostId().subscribe(({ postId }: any) => {
-      switch(postId.toString()) {
+      switch (postId.toString()) {
         case '2':
           this.router.navigate(['/main']);
           break;

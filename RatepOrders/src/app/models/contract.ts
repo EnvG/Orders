@@ -1,4 +1,4 @@
-import { Order } from './order';
+import { IOrder } from './order';
 import { ISpecification } from './specification';
 
 export interface IContract {
@@ -9,12 +9,13 @@ export interface IContract {
   Fullname?: string;
   Name?: string;
   Number: string;
+  StatusId?: number;
   StatusName: string;
   StartDate: Date;
   EndDate: Date;
 
   Specification?: ISpecification[];
-  Orders?: Order[];
+  Orders?: IOrder[];
   Sum?: number;
   UI?: {
     Visible: boolean;

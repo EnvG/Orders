@@ -16,7 +16,8 @@ import { ClientsPageComponent } from './pages/clients-page/clients-page.componen
 import { NewClientPageComponent } from './pages/new-client-page/new-client-page.component';
 import { TextMaskModule } from 'angular2-text-mask';
 import { ProductsPageComponent } from './pages/products-page/products-page.component';
-import { NewContractComponent } from './pages/new-contract/new-contract.component';
+import { NewContractPageComponent } from './pages/new-contract-page/new-contract-page.component';
+import { SpecificationPageComponent } from './pages/specification-page/specification-page.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { NewContractComponent } from './pages/new-contract/new-contract.componen
     ClientsPageComponent,
     NewClientPageComponent,
     ProductsPageComponent,
-    NewContractComponent,
+    NewContractPageComponent,
+    SpecificationPageComponent,
   ],
   imports: [
     BrowserModule,

@@ -16,11 +16,11 @@
 <body>
   <div class="page">
     <header class="header">
-      <div class="header__title">Договор {{order?.Number}}<br>подряда на изготовление продукции</div>
-      <div class="header__date">{{order?.OrderDate | date:'dd MMM yyyy' : '+3' : 'ru'}}</div>
+      <div class="header__title">Договор {{contract?.Number}}<br>подряда на изготовление продукции</div>
+      <div class="header__date">{{contract?.StartDate | date:'dd MMM yyyy' : '+3' : 'ru'}}</div>
     </header>
     <main>
-      <p>АО «РАТЕП» (далее Исполнитель) с одной стороны и {{order?.Fullname || order?.OrganizationName}} (далее
+      <p>АО «РАТЕП» (далее Исполнитель) с одной стороны и {{contract?.Fullname || contract?.Name}} (далее
         Заказчик) с другой, совместно
         именуемые как Стороны, заключили настоящий договор (далее Договор) о нижеследующем:</p>
 
@@ -155,7 +155,7 @@
       <section>
         <h1>8. Срок действия договора</h1>
 
-        <p>8.1. Настоящий Договор вступает в силу с момента его подписания и действует до {{order?.ReadyDate |
+        <p>8.1. Настоящий Договор вступает в силу с момента его подписания и действует до {{contract?.EndDate |
           date:'dd.MM.yyyy' : '+3' : 'ru'}}.</p>
       </section>
 
@@ -188,7 +188,7 @@
 
           <div class="sign">
             <p>____________________</p>
-            <p class="sign-title"><sup>{{getInitials(order?.Fullname || '') || order?.OrganizationName}}</sup></p>
+            <p class="sign-title"><sup>{{getInitials(contract?.Fullname || '') || contract?.Name}}</sup></p>
           </div>
         </div>
 
@@ -205,10 +205,10 @@
           </thead>
 
           <tbody>
-            <tr *ngFor="let position of positions">
-              <td>{{position.ProductName}}</td>
-              <td>{{position.Amount}}</td>
-              <td>{{position.PriceValue | number:'1.2-2' : 'ru'}}</td>
+            <tr *ngFor="let specification of specification">
+              <td>{{specification.ProductName}}</td>
+              <td>{{specification.Amount}}</td>
+              <td>{{specification.PriceValue | number:'1.2-2' : 'ru'}}</td>
             </tr>
           </tbody>
         </table>

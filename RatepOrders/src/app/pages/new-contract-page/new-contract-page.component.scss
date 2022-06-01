@@ -1,0 +1,74 @@
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+}
+
+.card {
+  // position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  height: 750px;
+  overflow: scroll;
+  border: 1px solid var(--main-color);
+  border-radius: 20px;
+
+  padding: 5px;
+  margin: 0 auto;
+
+  &-title {
+    margin-bottom: 2rem;
+  }
+
+  select {
+    width: 45%;
+  }
+}
+
+.client-info {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.name {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  height: 100%;
+  font-size: 2.5rem;
+  margin-left: 1rem;
+  vertical-align: middle;
+}
+
+.contract-info {
+  width: 50%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+button {
+  width: 100%;
+  // position: absolute;
+  bottom: 2rem;
+}
+
+.selected {
+  background-color: var(--selection-color);
+}
+
+.sum {
+  width: 100%;
+  text-align: right;
+  font-size: 1.75rem;
+  font-weight: bold;
+}
