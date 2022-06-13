@@ -142,6 +142,10 @@ export class DatabaseService {
     return this.httpClient.post(`${ADDRESS}/add-physical-person-client`, body);
   }
 
+  addJuridicalPersonClient(body: any) {
+    return this.httpClient.post(`${ADDRESS}/add-juridical-person-client`, body);
+  }
+
   // Метод get-запроса к серверу
   async get(endpoint: string) {
     let response = await fetch(`${ADDRESS}/${endpoint}`);

@@ -36,6 +36,8 @@ Staff E ON U.UserId = E.UserId
     `CALL SetContractStatus (${clientId}, ${contractId}, ${statusId})`,
   addPhysicalPersonClient: (INN, fullname, phone, address) =>
     `CALL addPhysicalPersonClient('${INN}', '${fullname}', '${phone}', '${address}')`,
+  addJuridicalPersonClient: (INN, fullname, phone, address) =>
+    `CALL addJuridicalPersonClient('${INN}', '${fullname}', '${phone}', '${address}')`,
   // Запрос на получение позиций заказа по ID заказа
   getPositions: (orderId) => `
     SELECT

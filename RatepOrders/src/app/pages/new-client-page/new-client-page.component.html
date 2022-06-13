@@ -38,7 +38,34 @@
       </div>
 
       <button (click)="addPhysicalPersonClient()"
-      [disabled]="!physicalPersonFilled()">Добавить клиента</button>
+              [disabled]="!physicalPersonFilled()">Добавить клиента</button>
+    </div>
+
+    <div class="juridical-person form"
+         *ngIf="INN?.length == 10 && INNValidate()">
+      <div class="input">
+        <label for="name">Наименование</label>
+        <input type="text"
+               id="name"
+               [(ngModel)]="juridicalPerson.name">
+      </div>
+      <div class="input">
+        <label for="KPP">КПП</label>
+        <input type="text"
+               id="KPP"
+               [textMask]="{mask: KPPMask}"
+               [(ngModel)]="juridicalPerson.KPP">
+      </div>
+      <div class="input">
+        <label for="OGRN">ОГРН</label>
+        <input type="text"
+               id="OGRN"
+               [textMask]="{mask: OGRNMask}"
+               [(ngModel)]="juridicalPerson.OGRN">
+      </div>
+
+      <button (click)="addJuridicalPersonClient()"
+              [disabled]="!juridicalPersonFilled()">Добавить клиента</button>
     </div>
   </div>
 </div>

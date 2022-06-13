@@ -80,7 +80,7 @@ app.get("/auth/:login/:password", (req, res) => {
         res.status(204).send();
       }
     } catch (error) {
-      console.log("ERR");
+      console.log(error);
       res.status(204).send(error);
     }
   });
@@ -247,6 +247,26 @@ app.post("/add-physical-person-client", express.json(), (req, res) => {
   new Promise((resolve, reject) => {
     connection.query(
       queries.addPhysicalPersonClient(INN, fullname, phone, address),
+      function (err, rows, fields) {
+        if (err) {
+          console.log(err.sqlMessage);
+          reject(err);
+        }
+
+        resolve({ message: "Клиент добавлен" });
+      }
+    );
+  })
+    .then((value) => res.status(200).json(value))
+    .catch((err) => res.status(400).json(err.sqlMessage));
+});
+
+app.post("/add-juridical-person-client", express.json(), (req, res) => {
+  let { INN, name, KPP, OGRN } = req.body;
+
+  new Promise((resolve, reject) => {
+    connection.query(
+      queries.addJuridicalPersonClient(INN, name, KPP, OGRN),
       function (err, rows, fields) {
         if (err) {
           console.log(err.sqlMessage);

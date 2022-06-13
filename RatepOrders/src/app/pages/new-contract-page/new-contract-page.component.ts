@@ -3,7 +3,6 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IClient } from 'src/app/models/client';
 import { IProduct } from 'src/app/models/product';
-import { ISpecification } from 'src/app/models/specification';
 import { CookiesService } from 'src/app/services/cookies.service';
 import { DatabaseService } from 'src/app/services/database.service';
 
@@ -81,12 +80,19 @@ export class NewContractPageComponent implements OnInit {
   }
 
   checkDate() {
-    return (
-      (this.startDate || Date.now()) < (this.endDate || Date.now())
-    );
+    return (this.startDate || Date.now()) < (this.endDate || Date.now());
   }
 
   addContract() {
+    if (
+      (new Date(this.startDate || Date.now()) || new Date()).getTime() -
+        Date.now() <
+      0
+    ) {
+      alert('Дата действия договора не может быть раньше текущей даты');
+      return;
+    }
+
     let login = this.cookiesService.getCookie('login');
     let body = {
       clientId: this.client?.ClientId,

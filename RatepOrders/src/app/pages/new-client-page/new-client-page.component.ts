@@ -40,30 +40,53 @@ export class NewClientPageComponent implements OnInit {
 
   // Общие поля
   // ИНН
-  public INN?: string = '121212121212';
+  public INN?: string = '';
 
   // Поля физического лица
   public physicalPerson: {
     fullname: string;
     phone: string;
     address: string;
-  } = { fullname: 'Крозар Иван Викторович', phone: '', address: '' };
+  } = { fullname: '', phone: '', address: '' };
+
+  // Поля юридического лица
+  public juridicalPerson: {
+    name: string;
+    KPP: string;
+    OGRN: string;
+  } = { name: '', KPP: '', OGRN: '' };
 
   constructor(private database: DatabaseService, private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    setTimeout(() => {
+      console.log(this.physicalPerson.phone.length);
+    }, 20000);
+  }
 
   INNValidate() {
     return (
-      (this.INN?.length == 10 || this.INN?.length == 12) && Number(this.INN)
+      (this.INN?.trim().length == 10 || this.INN?.trim().length == 12) &&
+      Number(this.INN)
     );
   }
 
   physicalPersonFilled() {
     return (
       this.physicalPerson.phone &&
+      !this.physicalPerson.phone.includes('_') &&
       this.physicalPerson.address &&
       this.physicalPerson.fullname
+    );
+  }
+
+  juridicalPersonFilled() {
+    return (
+      this.juridicalPerson.name &&
+      this.juridicalPerson.KPP &&
+      !this.juridicalPerson.KPP.includes('_') &&
+      this.juridicalPerson.OGRN &&
+      !this.juridicalPerson.OGRN.includes('_')
     );
   }
 
@@ -74,8 +97,32 @@ export class NewClientPageComponent implements OnInit {
         ...this.physicalPerson,
       })
       .subscribe(
-        (value: any) => alert(value.message),
-        (err: any) => console.log(err)
+        (value: any) => {
+          alert(value.message);
+          location.href = '/clients';
+        },
+        (err: any) => {
+          alert('Ошибка добавления');
+          console.log(err);
+        }
+      );
+  }
+
+  addJuridicalPersonClient() {
+    this.database
+      .addJuridicalPersonClient({
+        INN: this.INN,
+        ...this.juridicalPerson,
+      })
+      .subscribe(
+        (value: any) => {
+          alert(value.message);
+          location.href = '/clients';
+        },
+        (err: any) => {
+          alert('Ошибка добавления');
+          console.log(err);
+        }
       );
   }
 }

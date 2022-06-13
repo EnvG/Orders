@@ -1,6 +1,6 @@
 module.exports = {
   SERVER: {
-    HOST: "localhost",
+    HOST: "192.168.1.65",
     PORT: 5000,
   },
   DATABASE: {

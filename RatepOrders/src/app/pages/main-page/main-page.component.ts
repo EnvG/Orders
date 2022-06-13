@@ -25,61 +25,63 @@ export class MainPageComponent implements OnInit {
     // Получение списка договоров
     this.database.getContracts().subscribe(({ contracts }: any) => {
       this.contracts = contracts;
-
       this.contracts.forEach((contract) => {
-        // Promise для составления последовательности:
-        // [(1) Заполнить Спецификацию заказа ----> (2) Заполнить сумму по Спецификации ---->
-        // (3) Заполнить Заказы ----> [(4)(1) Заполнить Состав заказа ----> (4)(2) Заполнить сумму по Заказу]]
-        new Promise((resolve, reject) => {
-          // [(1) Заполнение спецификаций договоров
-          this.database
-            .getSpecification(contract.ClientId, contract.ContractId)
-            .subscribe(({ specification }: any) => {
-              contract.Specification = specification;
-              // Передача заполненной спецификации в следующий then
-              resolve(contract.Specification);
-            });
-        })
-          .then((result: any) => {
-            // (2) Заполнение суммы договора
-            contract.Sum = result.reduce(function (sum: number, current: any) {
-              return sum + current.PriceValue * current.Amount;
-            }, 0);
-          })
-          .then(() => {
-            // (3) Заполнение заказов
-            this.database
-              .getOrders(contract.ClientId, contract.ContractId)
-              .subscribe(({ orders }: any) => {
-                (<IOrder[]>orders).forEach((order: IOrder) => {
-                  new Promise((resolve, reject) => {
-                    // (4)(1) Заполнение состава заказов
-                    this.database
-                      .getOrderComposition(
-                        order.ClientId,
-                        order.ContractId,
-                        order.OrderId
-                      )
-                      .subscribe(({ orderComposition }: any) => {
-                        order.OrderComposition = orderComposition;
-                        resolve(order.OrderComposition);
-                      });
-                  }).then((result: any) => {
-                    // (4)(2) Заполнение суммы заказа]]
-                    order.Sum = result.reduce(function (
-                      sum: number,
-                      current: any
-                    ) {
-                      return sum + current.PriceValue * current.Amount;
-                    },
-                    0);
-                  });
-                });
-                contract.Orders = orders;
-              });
-          });
+        new Promise((resolve, reject) =>
+          this.fillSpecification(contract, resolve, reject)
+        )
+          .then((result: any) => this.fillContractSum(contract, result))
+          .then(() => this.fillOrder(contract));
       });
     });
+  }
+
+  fillSpecification(contract: IContract, resolve: any, reject: any) {
+    // [(1) Заполнение спецификаций договоров
+    this.database
+      .getSpecification(contract.ClientId, contract.ContractId)
+      .subscribe(({ specification }: any) => {
+        contract.Specification = specification;
+        // Передача заполненной спецификации в следующий then
+        resolve(contract.Specification);
+      });
+  }
+
+  fillContractSum(contract: IContract, result: any) {
+    // (2) Заполнение суммы договора
+    contract.Sum = result.reduce(function (sum: number, current: any) {
+      return sum + current.PriceValue * current.Amount;
+    }, 0);
+  }
+
+  fillOrder(contract: IContract) {
+    // (3) Заполнение заказов
+    this.database
+      .getOrders(contract.ClientId, contract.ContractId)
+      .subscribe(({ orders }: any) => {
+        (<IOrder[]>orders).forEach((order: IOrder) => {
+          new Promise((resolve, reject) =>
+            this.fillOrderComposition(order, resolve, reject)
+          ).then((result: any) => this.fillOrderSum(order, result));
+        });
+        contract.Orders = orders;
+      });
+  }
+
+  fillOrderComposition(order: IOrder, resolve: any, reject: any) {
+    // (4)(1) Заполнение состава заказов
+    this.database
+      .getOrderComposition(order.ClientId, order.ContractId, order.OrderId)
+      .subscribe(({ orderComposition }: any) => {
+        order.OrderComposition = orderComposition;
+        resolve(order.OrderComposition);
+      });
+  }
+
+  fillOrderSum(order: IOrder, result: any) {
+    // (4)(2) Заполнение суммы заказа]]
+    order.Sum = result.reduce(function (sum: number, current: any) {
+      return sum + current.PriceValue * current.Amount;
+    }, 0);
   }
 
   viewToggle(item: any) {
@@ -120,15 +122,9 @@ export class MainPageComponent implements OnInit {
     contractId: number,
     statusId: number
   ) {
-    new Promise((resolve, reject) => {
-      orders.forEach((order: IOrder) => {
-        if (order.StatusId != 4) {
-          reject();
-          return;
-        }
-      });
-      resolve(statusId);
-    })
+    new Promise((resolve, reject) =>
+      this.checkOrdersStasus(orders, statusId, resolve, reject)
+    )
       .then((value) => {
         this.database
           .setContractStatus({ clientId, contractId, statusId })
@@ -145,6 +141,16 @@ export class MainPageComponent implements OnInit {
           'Для закрытия договора требуется выдать все заказы по данному договору'
         )
       );
+  }
+
+  checkOrdersStasus(orders: any, statusId: number, resolve: any, reject: any) {
+    orders.forEach((order: IOrder) => {
+      if (order.StatusId != 4) {
+        reject();
+        return;
+      }
+    });
+    resolve(statusId);
   }
 
   changeDate() {
@@ -164,7 +170,7 @@ export class MainPageComponent implements OnInit {
       let numberFilter = contract.Number.toUpperCase().startsWith(
         this.search?.toUpperCase() || ''
       );
-      // Фильтр по клиентку
+      // Фильтр по клиенту
       let nameFilter = (contract.Fullname || contract.Name)
         ?.toUpperCase()
         .includes(this.search?.toUpperCase() || '');
